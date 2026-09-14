@@ -77,10 +77,13 @@ function payWithPaystack() {
         transaction.reference
       );
     },
+ onCancel: function() {
+  alert("Payment was cancelled.");
+},
 
-    onCancel: function() {
-      alert("Payment was cancelled.");
-    }
+onError: function(error) {
+  alert("Paystack Error: " + error.message);
+}
   });
 }
 </script>
