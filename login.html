@@ -7,6 +7,90 @@
   <title>Login - G R M DATA SUB</title>
 
   <link rel="stylesheet" href="style.css">
+
+  <style>
+    .welcome-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 9999;
+    }
+
+    .welcome-box {
+      width: 100%;
+      max-width: 500px;
+      background: #ffffff;
+      border-radius: 22px;
+      padding: 28px 22px;
+      text-align: center;
+      box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
+      animation: welcomeIn 0.35s ease;
+    }
+
+    .welcome-icon {
+      font-size: 48px;
+      margin-bottom: 8px;
+    }
+
+    .welcome-box h2 {
+      margin: 5px 0 15px;
+      color: #1266d6;
+      font-size: 25px;
+    }
+
+    .welcome-box h3 {
+      margin: 15px 0 8px;
+      color: #111827;
+      font-size: 18px;
+    }
+
+    .welcome-box p {
+      color: #333;
+      line-height: 1.7;
+      font-size: 15px;
+      margin: 8px 0;
+    }
+
+    .welcome-divider {
+      height: 1px;
+      background: #dddddd;
+      margin: 18px 0;
+    }
+
+    .okay-button {
+      margin-top: 18px;
+      width: 100%;
+      max-width: 220px;
+      padding: 13px 25px;
+      border: none;
+      border-radius: 12px;
+      background: #ffb000;
+      color: #111;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .okay-button:hover {
+      opacity: 0.9;
+    }
+
+    @keyframes welcomeIn {
+      from {
+        opacity: 0;
+        transform: scale(0.9);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+  </style>
 </head>
 
 <body>
@@ -52,26 +136,82 @@
     </section>
   </main>
 
+
+  <!-- Welcome Message -->
+
+  <div class="welcome-overlay" id="welcomeOverlay">
+
+    <div class="welcome-box">
+
+      <div class="welcome-icon">🎉</div>
+
+      <h2>WELCOME TO G R M DATA SUB</h2>
+
+      <h3>🇬🇧 English</h3>
+
+      <p>
+        BUY AFFORDABLE DATA BUNDLE QUICKLY AND EASILY.
+        FOR ANY ISSUES, SEND A MESSAGE ON THIS NUMBER:
+        <strong>09075392735</strong>
+      </p>
+
+      <div class="welcome-divider"></div>
+
+      <h3>🇳🇬 Hausa</h3>
+
+      <p>
+        BARKA DA ZUWA G R M DATA SUB.
+        SAYI DATA MAI INGANCI DA RAHUSA CIKIN SAUKI.
+        DOMIN MAGANCE WATA MATSALA,
+        TURA SAKO TA WANNAN LAMBAR:
+        <strong>09075392735</strong>
+      </p>
+
+      <button class="okay-button" id="okayButton">
+        OKAY
+      </button>
+
+    </div>
+
+  </div>
+
+
   <script>
+
     const loginForm = document.getElementById("loginForm");
     const message = document.getElementById("message");
 
+    const welcomeOverlay =
+      document.getElementById("welcomeOverlay");
+
+    const okayButton =
+      document.getElementById("okayButton");
+
+
     loginForm.addEventListener("submit", async function(event) {
+
       event.preventDefault();
 
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value;
+      const email =
+        document.getElementById("email").value.trim();
+
+      const password =
+        document.getElementById("password").value;
 
       message.textContent = "Logging in...";
 
+
       try {
+
         const response = await fetch(
           "https://grmdatasub-com.onrender.com/api/login",
           {
             method: "POST",
+
             headers: {
               "Content-Type": "application/json"
             },
+
             body: JSON.stringify({
               email: email,
               password: password
@@ -79,24 +219,41 @@
           }
         );
 
+
         const data = await response.json();
 
+
         if (!response.ok) {
+
           message.textContent =
             data.message || "Login failed.";
+
           return;
         }
 
-        localStorage.setItem("grm_auth_token", data.token);
+
+        // Save login session
+
+        localStorage.setItem(
+          "grm_auth_token",
+          data.token
+        );
+
 
         localStorage.setItem(
           "grm_user",
           JSON.stringify(data.user)
         );
 
-        message.textContent = "Login successful.";
 
-        window.location.href = "dashboard.html";
+        message.textContent =
+          "Login successful.";
+
+
+        // Show welcome message
+
+        welcomeOverlay.style.display = "flex";
+
 
       } catch (error) {
 
@@ -104,8 +261,20 @@
 
         message.textContent =
           "Unable to connect to server. Please try again.";
+
       }
+
     });
+
+
+    // OKAY button
+
+    okayButton.addEventListener("click", function() {
+
+      window.location.href = "dashboard.html";
+
+    });
+
   </script>
 
 </body>
