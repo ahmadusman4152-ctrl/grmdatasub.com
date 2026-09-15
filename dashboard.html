@@ -1,45 +1,233 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard - G R M DATA SUB</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Dashboard - G R M DATA SUB</title>
+
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    .dashboard-user {
+      margin: 20px 0;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .wallet-balance {
+      font-size: 28px;
+      font-weight: bold;
+      margin: 12px 0 20px;
+    }
+
+    .logout-button {
+      margin-top: 20px;
+      background: #dc2626;
+      color: white;
+      border: none;
+      padding: 13px 25px;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .message {
+      margin: 15px 0;
+      font-weight: bold;
+    }
+  </style>
 </head>
 
 <body>
+
 <main>
-<section class="hero">
-<h1>G R M DATA SUB</h1>
-<p>Customer Dashboard</p>
 
-<h2>Welcome 👋</h2>
-<p>Manage your account easily.</p>
+  <section class="hero">
 
-<div class="cards">
+    <h1>G R M DATA SUB</h1>
 
-<div class="card">
-<h3>Wallet</h3>
-<p>₦0.00</p>
-<a href="fundwallet.html"><button type="button">Fund Wallet</button></a>
-</div>
+    <p>Customer Dashboard</p>
 
-<div class="card">
-<h3>Buy Data</h3>
-<p>Choose your network and data plan.</p>
-<a href="buydata.html"><button type="button">Buy Data</button></a>
-</div>
+    <h2>Welcome 👋</h2>
 
-<div class="card">
-<h3>Transactions</h3>
-<p>View your transaction history.</p>
-<button>View Transactions</button>
-</div>
+    <p class="dashboard-user" id="userName">
+      Loading account...
+    </p>
 
-</div>
+    <p>Manage your account easily.</p>
 
-<p><a href="index.html">Back to Home</a></p>
-</section>
+    <div class="cards">
+
+      <!-- Wallet -->
+      <div class="card">
+
+        <h3>Wallet</h3>
+
+        <div class="wallet-balance" id="walletBalance">
+          ₦0.00
+        </div>
+
+        <a href="fundwallet.html">
+          <button type="button">Fund Wallet</button>
+        </a>
+
+      </div>
+
+
+      <!-- Buy Data -->
+      <div class="card">
+
+        <h3>Buy Data</h3>
+
+        <p>Choose your network and data plan.</p>
+
+        <a href="buydata.html">
+          <button type="button">Buy Data</button>
+        </a>
+
+      </div>
+
+
+      <!-- Transactions -->
+      <div class="card">
+
+        <h3>Transactions</h3>
+
+        <p>View your transaction history.</p>
+
+        <button type="button" onclick="viewTransactions()">
+          View Transactions
+        </button>
+
+      </div>
+
+    </div>
+
+    <p class="message" id="message"></p>
+
+    <button
+      type="button"
+      class="logout-button"
+      id="logoutButton">
+      Logout
+    </button>
+
+    <p>
+      <a href="index.html">Back to Home</a>
+    </p>
+
+  </section>
+
 </main>
+
+
+<script>
+
+const API_URL = "https://grmdatasub-com.onrender.com";
+
+const token = localStorage.getItem("grm_auth_token");
+
+const userName = document.getElementById("userName");
+const walletBalance = document.getElementById("walletBalance");
+const message = document.getElementById("message");
+const logoutButton = document.getElementById("logoutButton");
+
+
+/* Check login */
+async function loadAccount() {
+
+  if (!token) {
+    window.location.href = "login.html";
+    return;
+  }
+
+  try {
+
+    const response = await fetch(
+      `${API_URL}/api/me`,
+      {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+
+      localStorage.removeItem("grm_auth_token");
+      localStorage.removeItem("grm_user");
+
+      window.location.href = "login.html";
+      return;
+    }
+
+    userName.textContent =
+      `Hello, ${data.user.fullName} 👋`;
+
+    const balance =
+      Number(data.user.walletBalance || 0);
+
+    walletBalance.textContent =
+      `₦${balance.toFixed(2)}`;
+
+  } catch (error) {
+
+    console.error(error);
+
+    message.textContent =
+      "Unable to connect to server. Please try again.";
+
+  }
+}
+
+
+/* Logout */
+logoutButton.addEventListener("click", async function () {
+
+  try {
+
+    await fetch(
+      `${API_URL}/api/logout`,
+      {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      }
+    );
+
+  } catch (error) {
+
+    console.error(error);
+
+  }
+
+  localStorage.removeItem("grm_auth_token");
+  localStorage.removeItem("grm_user");
+
+  window.location.href = "login.html";
+
+});
+
+
+/* Transactions */
+function viewTransactions() {
+
+  message.textContent =
+    "Transaction history will be available here.";
+
+}
+
+
+/* Start */
+loadAccount();
+
+</script>
+
 </body>
 </html>
