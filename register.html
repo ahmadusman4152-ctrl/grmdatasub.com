@@ -13,27 +13,117 @@
       <h1>G R M DATA SUB</h1>
       <p>Create your account</p>
 
-      <form>
-        <input type="text" placeholder="Full Name" required>
+      <form id="registerForm">
+
+        <input
+          id="fullName"
+          type="text"
+          placeholder="Full Name"
+          required
+        >
         <br><br>
 
-        <input type="email" placeholder="Email Address" required>
+        <input
+          id="email"
+          type="email"
+          placeholder="Email Address"
+          required
+        >
         <br><br>
 
-        <input type="tel" placeholder="Phone Number" required>
+        <input
+          id="phone"
+          type="tel"
+          placeholder="Phone Number"
+          required
+        >
         <br><br>
 
-        <input type="password" placeholder="Password" required>
+        <input
+          id="password"
+          type="password"
+          placeholder="Password"
+          required
+        >
         <br><br>
 
-        <input type="password" placeholder="Confirm Password" required>
+        <input
+          id="confirmPassword"
+          type="password"
+          placeholder="Confirm Password"
+          required
+        >
         <br><br>
 
-        <a href="dashboard.html"><button type="button">Create Account</button></a>
+        <button type="submit">Create Account</button>
+
       </form>
 
-      <p>Already have an account? <a href="login.html">Login</a></p>
+      <p id="message"></p>
+
+      <p>
+        Already have an account?
+        <a href="login.html">Login</a>
+      </p>
+
     </section>
   </main>
+
+  <script>
+    const form = document.getElementById("registerForm");
+    const message = document.getElementById("message");
+
+    form.addEventListener("submit", async function(event) {
+      event.preventDefault();
+
+      const fullName = document.getElementById("fullName").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const phone = document.getElementById("phone").value.trim();
+      const password = document.getElementById("password").value;
+      const confirmPassword = document.getElementById("confirmPassword").value;
+
+      if (password !== confirmPassword) {
+        message.textContent = "Passwords do not match.";
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          "https://grmdatasub-com.onrender.com/api/register",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              fullName,
+              email,
+              phone,
+              password
+            })
+          }
+        );
+
+        const data = await response.json();
+
+        if (response.ok) {
+          message.textContent = data.message;
+          form.reset();
+
+          setTimeout(() => {
+            window.location.href = "login.html";
+          }, 1500);
+
+        } else {
+          message.textContent = data.message || "Registration failed.";
+        }
+
+      } catch (error) {
+        message.textContent =
+          "Unable to connect to the server. Please try again.";
+      }
+    });
+  </script>
+
 </body>
 </html>
