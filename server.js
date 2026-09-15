@@ -10,7 +10,6 @@ if (!process.env.DATABASE_URL) {
   process.exit(1);
 }
 
-// PostgreSQL
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   max: 5,
@@ -64,6 +63,28 @@ function hashPassword(password) {
   return `${salt}:${hash}`;
 }
 
+// Verify password
+function verifyPassword(password, storedHash) {
+  const [salt, originalHash] = storedHash.split(":");
+
+  if (!salt || !originalHash) {
+    return false;
+  }
+
+  const hash = crypto.scryptSync(password, salt, 64, {
+    N: 16384,
+    r: 8,
+    p: 1
+  });
+
+  const original = Buffer.from(originalHash, "hex");
+
+  return (
+    original.length === hash.length &&
+    crypto.timingSafeEqual(original, hash)
+  );
+}
+
 // Health check
 app.get("/api/health", async (req, res) => {
   try {
@@ -84,7 +105,7 @@ app.get("/api/health", async (req, res) => {
   }
 });
 
-// Register user
+// Register
 app.post("/api/register", async (req, res) => {
   try {
     const { fullName, email, phone, password } = req.body;
@@ -125,19 +146,12 @@ app.post("/api/register", async (req, res) => {
     }
 
     const passwordHash = hashPassword(cleanPassword);
-
     const userId = crypto.randomUUID();
 
     await pool.query(
       `
       INSERT INTO users
-      (
-        id,
-        full_name,
-        email,
-        phone,
-        password_hash
-      )
+      (id, full_name, email, phone, password_hash)
       VALUES ($1, $2, $3, $4, $5)
       `,
       [
@@ -168,6 +182,185 @@ app.post("/api/register", async (req, res) => {
   }
 });
 
+// Login
+app.post("/api/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({
+        message: "Email and password are required."
+      });
+    }
+
+    const cleanEmail = String(email).trim().toLowerCase();
+    const cleanPassword = String(password);
+
+    const result = await pool.query(
+      `
+      SELECT id, full_name, email, phone, password_hash, wallet_balance
+      FROM users
+      WHERE email = $1
+      LIMIT 1
+      `,
+      [cleanEmail]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(401).json({
+        message: "Invalid email or password."
+      });
+    }
+
+    const user = result.rows[0];
+
+    const passwordValid = verifyPassword(
+      cleanPassword,
+      user.password_hash
+    );
+
+    if (!passwordValid) {
+      return res.status(401).json({
+        message: "Invalid email or password."
+      });
+    }
+
+    // Create a secure random login token.
+    const token = crypto.randomBytes(32).toString("hex");
+
+    const tokenHash = crypto
+      .createHash("sha256")
+      .update(token)
+      .digest("hex");
+
+    await pool.query(
+      `
+      INSERT INTO sessions
+      (id, user_id, token_hash, expires_at)
+      VALUES ($1, $2, $3, NOW() + INTERVAL '7 days')
+      `,
+      [
+        crypto.randomUUID(),
+        user.id,
+        tokenHash
+      ]
+    );
+
+    res.json({
+      message: "Login successful.",
+      token,
+      user: {
+        id: user.id,
+        fullName: user.full_name,
+        email: user.email,
+        phone: user.phone,
+        walletBalance: user.wallet_balance
+      }
+    });
+
+  } catch (error) {
+    console.error("Login error:", error);
+
+    res.status(500).json({
+      message: "Unable to login. Please try again."
+    });
+  }
+});
+
+// Current logged-in user
+app.get("/api/me", async (req, res) => {
+  try {
+    const auth = req.headers.authorization || "";
+
+    if (!auth.startsWith("Bearer ")) {
+      return res.status(401).json({
+        message: "Authentication required."
+      });
+    }
+
+    const token = auth.substring(7);
+
+    const tokenHash = crypto
+      .createHash("sha256")
+      .update(token)
+      .digest("hex");
+
+    const result = await pool.query(
+      `
+      SELECT
+        u.id,
+        u.full_name,
+        u.email,
+        u.phone,
+        u.wallet_balance
+      FROM sessions s
+      JOIN users u ON u.id = s.user_id
+      WHERE s.token_hash = $1
+      AND s.expires_at > NOW()
+      LIMIT 1
+      `,
+      [tokenHash]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(401).json({
+        message: "Session expired or invalid."
+      });
+    }
+
+    const user = result.rows[0];
+
+    res.json({
+      user: {
+        id: user.id,
+        fullName: user.full_name,
+        email: user.email,
+        phone: user.phone,
+        walletBalance: user.wallet_balance
+      }
+    });
+
+  } catch (error) {
+    console.error("Authentication error:", error);
+
+    res.status(500).json({
+      message: "Unable to verify account."
+    });
+  }
+});
+
+// Logout
+app.post("/api/logout", async (req, res) => {
+  try {
+    const auth = req.headers.authorization || "";
+
+    if (auth.startsWith("Bearer ")) {
+      const token = auth.substring(7);
+
+      const tokenHash = crypto
+        .createHash("sha256")
+        .update(token)
+        .digest("hex");
+
+      await pool.query(
+        "DELETE FROM sessions WHERE token_hash = $1",
+        [tokenHash]
+      );
+    }
+
+    res.json({
+      message: "Logged out successfully."
+    });
+
+  } catch (error) {
+    console.error("Logout error:", error);
+
+    res.status(500).json({
+      message: "Unable to logout."
+    });
+  }
+});
+
 // Create database tables
 async function initializeDatabase() {
   await pool.query(`
@@ -180,6 +373,16 @@ async function initializeDatabase() {
       wallet_balance NUMERIC(12, 2) NOT NULL DEFAULT 0.00,
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
       updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `);
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS sessions (
+      id UUID PRIMARY KEY,
+      user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      token_hash TEXT UNIQUE NOT NULL,
+      expires_at TIMESTAMPTZ NOT NULL,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     )
   `);
 
