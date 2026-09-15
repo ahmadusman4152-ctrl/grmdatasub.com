@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Buy Airtime - G R M DATA SUB</title>
+
+<link rel="stylesheet" href="style.css">
+
+<style>
+.airtime-box {
+  max-width: 500px;
+  margin: 30px auto;
+  padding: 28px 22px;
+  background: #fff;
+  border-radius: 22px;
+  box-shadow: 0 10px 35px rgba(0,0,0,0.12);
+  text-align: center;
+}
+
+.airtime-box h1 {
+  color: #1266d6;
+  margin-bottom: 10px;
+}
+
+.airtime-box p {
+  color: #555;
+  line-height: 1.6;
+}
+
+.airtime-box input,
+.airtime-box select {
+  width: 100%;
+  padding: 14px;
+  margin: 10px 0;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+.airtime-box button {
+  width: 100%;
+  padding: 14px;
+  margin-top: 12px;
+  border: none;
+  border-radius: 10px;
+  background: #ffb000;
+  color: #111;
+  font-size: 17px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.airtime-box button:hover {
+  opacity: 0.9;
+}
+
+.back-link {
+  display: inline-block;
+  margin-top: 18px;
+  text-decoration: none;
+  font-weight: bold;
+  color: #1266d6;
+}
+
+#message {
+  margin-top: 15px;
+  font-weight: bold;
+}
+</style>
+</head>
+
+<body>
+
+<main>
+<section class="airtime-box">
+
+<h1>G R M DATA SUB</h1>
+
+<h2>Buy Airtime 📱</h2>
+
+<p>
+Buy airtime quickly and easily for any Nigerian network.
+</p>
+
+<form id="airtimeForm">
+
+<select id="network" required>
+<option value="">Select Network</option>
+<option value="MTN">MTN</option>
+<option value="Airtel">Airtel</option>
+<option value="Glo">Glo</option>
+<option value="9mobile">9mobile</option>
+</select>
+
+<input
+type="tel"
+id="phone"
+placeholder="Enter phone number"
+maxlength="11"
+required
+>
+
+<input
+type="number"
+id="amount"
+placeholder="Enter amount (₦)"
+min="50"
+required
+>
+
+<button type="submit">
+Continue
+</button>
+
+</form>
+
+<p id="message"></p>
+
+<a class="back-link" href="dashboard.html">
+← Back to Dashboard
+</a>
+
+</section>
+</main>
+
+<script>
+const airtimeForm = document.getElementById("airtimeForm");
+const message = document.getElementById("message");
+
+airtimeForm.addEventListener("submit", function(event) {
+  event.preventDefault();
+
+  const network = document.getElementById("network").value;
+  const phone = document.getElementById("phone").value.trim();
+  const amount = Number(document.getElementById("amount").value);
+
+  if (!network || !phone || !amount) {
+    message.textContent = "Please fill in all fields.";
+    return;
+  }
+
+  if (!/^[0-9]{11}$/.test(phone)) {
+    message.textContent = "Please enter a valid 11-digit phone number.";
+    return;
+  }
+
+  if (amount < 50) {
+    message.textContent = "Minimum airtime amount is ₦50.";
+    return;
+  }
+
+  message.textContent =
+    "Airtime details accepted. Payment integration will be connected next.";
+});
+</script>
+
+</body>
+                   </html>
