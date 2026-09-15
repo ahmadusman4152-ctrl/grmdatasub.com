@@ -1,161 +1,283 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Buy Airtime - G R M DATA SUB</title>
+    <title>Buy Airtime - G R M DATA SUB</title>
 
-<link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css">
 
-<style>
-.airtime-box {
-  max-width: 500px;
-  margin: 30px auto;
-  padding: 28px 22px;
-  background: #fff;
-  border-radius: 22px;
-  box-shadow: 0 10px 35px rgba(0,0,0,0.12);
-  text-align: center;
-}
+    <style>
+        .airtime-card {
+            max-width: 520px;
+            margin: 30px auto;
+        }
 
-.airtime-box h1 {
-  color: #1266d6;
-  margin-bottom: 10px;
-}
+        .summary {
+            display: none;
+            margin-top: 25px;
+            padding: 22px;
+            border-radius: 18px;
+            background: #f5f7fa;
+            text-align: left;
+        }
 
-.airtime-box p {
-  color: #555;
-  line-height: 1.6;
-}
+        .summary h3 {
+            color: #1266d6;
+            text-align: center;
+            margin-bottom: 20px;
+        }
 
-.airtime-box input,
-.airtime-box select {
-  width: 100%;
-  padding: 14px;
-  margin: 10px 0;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  font-size: 16px;
-  box-sizing: border-box;
-}
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            padding: 12px 0;
+            border-bottom: 1px solid #ddd;
+        }
 
-.airtime-box button {
-  width: 100%;
-  padding: 14px;
-  margin-top: 12px;
-  border: none;
-  border-radius: 10px;
-  background: #ffb000;
-  color: #111;
-  font-size: 17px;
-  font-weight: bold;
-  cursor: pointer;
-}
+        .summary-row:last-child {
+            border-bottom: none;
+        }
 
-.airtime-box button:hover {
-  opacity: 0.9;
-}
+        .summary-label {
+            font-weight: bold;
+        }
 
-.back-link {
-  display: inline-block;
-  margin-top: 18px;
-  text-decoration: none;
-  font-weight: bold;
-  color: #1266d6;
-}
+        .confirm-button {
+            width: 100%;
+            margin-top: 18px;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 12px;
+            background: #16a34a;
+            color: white;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+        }
 
-#message {
-  margin-top: 15px;
-  font-weight: bold;
-}
-</style>
+        .cancel-button {
+            width: 100%;
+            margin-top: 10px;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 12px;
+            background: #dc2626;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .message {
+            margin-top: 18px;
+            font-weight: bold;
+            text-align: center;
+        }
+    </style>
 </head>
 
 <body>
 
 <main>
-<section class="airtime-box">
 
-<h1>G R M DATA SUB</h1>
+<section class="hero airtime-card">
 
-<h2>Buy Airtime 📱</h2>
+    <h1>G R M DATA SUB</h1>
 
-<p>
-Buy airtime quickly and easily for any Nigerian network.
-</p>
+    <h2>Buy Airtime 📱</h2>
 
-<form id="airtimeForm">
+    <p>
+        Buy airtime quickly and easily for any Nigerian network.
+    </p>
 
-<select id="network" required>
-<option value="">Select Network</option>
-<option value="MTN">MTN</option>
-<option value="Airtel">Airtel</option>
-<option value="Glo">Glo</option>
-<option value="9mobile">9mobile</option>
-</select>
+    <form id="airtimeForm">
 
-<input
-type="tel"
-id="phone"
-placeholder="Enter phone number"
-maxlength="11"
-required
->
+        <select id="network" required>
+            <option value="">Select Network</option>
+            <option value="MTN">MTN</option>
+            <option value="Airtel">Airtel</option>
+            <option value="Glo">Glo</option>
+            <option value="9mobile">9mobile</option>
+        </select>
 
-<input
-type="number"
-id="amount"
-placeholder="Enter amount (₦)"
-min="50"
-required
->
+        <br><br>
 
-<button type="submit">
-Continue
-</button>
+        <input
+            type="tel"
+            id="phone"
+            placeholder="Enter phone number"
+            maxlength="11"
+            required
+        >
 
-</form>
+        <br><br>
 
-<p id="message"></p>
+        <input
+            type="number"
+            id="amount"
+            placeholder="Enter amount (₦)"
+            min="50"
+            required
+        >
 
-<a class="back-link" href="dashboard.html">
-← Back to Dashboard
-</a>
+        <br><br>
+
+        <button type="submit">
+            Continue
+        </button>
+
+    </form>
+
+
+    <!-- Order Summary -->
+
+    <div class="summary" id="summary">
+
+        <h3>Confirm Airtime Order</h3>
+
+        <div class="summary-row">
+            <span class="summary-label">Network</span>
+            <span id="summaryNetwork"></span>
+        </div>
+
+        <div class="summary-row">
+            <span class="summary-label">Phone Number</span>
+            <span id="summaryPhone"></span>
+        </div>
+
+        <div class="summary-row">
+            <span class="summary-label">Amount</span>
+            <span id="summaryAmount"></span>
+        </div>
+
+        <button
+            type="button"
+            class="confirm-button"
+            id="confirmButton">
+            Confirm Order
+        </button>
+
+        <button
+            type="button"
+            class="cancel-button"
+            id="cancelButton">
+            Cancel
+        </button>
+
+    </div>
+
+
+    <p
+        class="message"
+        id="message">
+    </p>
+
+
+    <p>
+        <a href="dashboard.html">
+            ← Back to Dashboard
+        </a>
+    </p>
 
 </section>
+
 </main>
 
+
 <script>
+
 const airtimeForm = document.getElementById("airtimeForm");
+
+const summary = document.getElementById("summary");
+
 const message = document.getElementById("message");
 
+const confirmButton =
+    document.getElementById("confirmButton");
+
+const cancelButton =
+    document.getElementById("cancelButton");
+
+
 airtimeForm.addEventListener("submit", function(event) {
-  event.preventDefault();
 
-  const network = document.getElementById("network").value;
-  const phone = document.getElementById("phone").value.trim();
-  const amount = Number(document.getElementById("amount").value);
+    event.preventDefault();
 
-  if (!network || !phone || !amount) {
-    message.textContent = "Please fill in all fields.";
-    return;
-  }
+    const network =
+        document.getElementById("network").value;
 
-  if (!/^[0-9]{11}$/.test(phone)) {
-    message.textContent = "Please enter a valid 11-digit phone number.";
-    return;
-  }
+    const phone =
+        document.getElementById("phone").value.trim();
 
-  if (amount < 50) {
-    message.textContent = "Minimum airtime amount is ₦50.";
-    return;
-  }
+    const amount =
+        Number(document.getElementById("amount").value);
 
-  message.textContent =
-    "Airtime details accepted. Payment integration will be connected next.";
+
+    if (!network) {
+        message.textContent =
+            "Please select a network.";
+
+        return;
+    }
+
+
+    if (!/^0\d{10}$/.test(phone)) {
+
+        message.textContent =
+            "Please enter a valid 11-digit phone number.";
+
+        return;
+    }
+
+
+    if (!amount || amount < 50) {
+
+        message.textContent =
+            "Minimum airtime amount is ₦50.";
+
+        return;
+    }
+
+
+    document.getElementById("summaryNetwork")
+        .textContent = network;
+
+    document.getElementById("summaryPhone")
+        .textContent = phone;
+
+    document.getElementById("summaryAmount")
+        .textContent =
+        "₦" + amount.toLocaleString();
+
+
+    summary.style.display = "block";
+
+    message.textContent = "";
+
 });
+
+
+confirmButton.addEventListener("click", function() {
+
+    message.textContent =
+        "Order confirmation is ready. Airtime processing will be connected after the backend and authorized airtime provider are configured.";
+
+});
+
+
+cancelButton.addEventListener("click", function() {
+
+    summary.style.display = "none";
+
+    message.textContent = "";
+
+});
+
+
 </script>
 
 </body>
-                   </html>
+</html>
