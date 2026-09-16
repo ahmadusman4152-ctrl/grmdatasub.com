@@ -110,9 +110,9 @@
           message.textContent = data.message;
           form.reset();
 
-          setTimeout(() => {
-            window.location.href = "login.html";
-          }, 1500);
+         setTimeout(() => {
+  window.location.replace("https://grmdatasub.com/login.html");
+}, 1500); 
 
         } else {
           message.textContent = data.message || "Registration failed.";
