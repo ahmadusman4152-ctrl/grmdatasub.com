@@ -455,6 +455,7 @@ const token = localStorage.getItem("grm_auth_token");
 
 const userName = document.getElementById("userName");
 const walletBalance = document.getElementById("walletBalance");
+const balanceToggle = document.getElementById("balanceToggle");
 const message = document.getElementById("message");
 const logoutButton = document.getElementById("logoutButton");
 
@@ -496,6 +497,7 @@ async function loadAccount() {
     const balance =
       Number(data.user.walletBalance || 0);
 
+    walletBalance.dataset.balance = balance;
     walletBalance.textContent =
       `₦${balance.toFixed(2)}`;
 
@@ -512,6 +514,15 @@ async function loadAccount() {
 
 /* Logout */
 logoutButton.addEventListener("click", async function () {
+balanceToggle.addEventListener("click", function () {
+  const balance = Number(walletBalance.dataset.balance || 0);
+
+  if (walletBalance.textContent.includes("••••")) {
+    walletBalance.textContent = `₦${balance.toFixed(2)}`;
+  } else {
+    walletBalance.textContent = "₦••••••";
+  }
+});
 
   try {
 
