@@ -37,6 +37,230 @@
       margin: 15px 0;
       font-weight: bold;
     }
+    /* CENTERED MOBILE DASHBOARD */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: #f5f7fb;
+  font-family: Arial, sans-serif;
+  color: #172033;
+}
+
+.app-dashboard {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  overflow-x: hidden;
+}
+
+/* TOP HEADER */
+
+.top-header {
+  width: 100%;
+  background: #1463ff;
+  color: white;
+  padding: 25px 20px;
+  text-align: center;
+}
+
+.profile-area {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+}
+
+.profile-icon {
+  font-size: 32px;
+}
+
+.welcome-small {
+  font-size: 16px;
+}
+
+.profile-name {
+  font-size: 22px;
+  font-weight: bold;
+  margin-top: 4px;
+}
+
+.subscriber {
+  font-size: 15px;
+  margin-top: 4px;
+}
+
+.header-icons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.icon-button {
+  border: none;
+  background: #ffb000;
+  padding: 14px 28px;
+  border-radius: 12px;
+  font-size: 20px;
+}
+
+/* WALLET */
+
+.wallet-section {
+  width: 100%;
+  padding: 25px 20px;
+  text-align: center;
+}
+
+.wallet-title {
+  font-size: 20px;
+  margin-bottom: 12px;
+}
+
+.wallet-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+}
+
+.wallet-balance {
+  font-size: 36px;
+  font-weight: bold;
+}
+
+.eye-button {
+  border: none;
+  background: #ffb000;
+  padding: 15px 28px;
+  border-radius: 12px;
+  font-size: 22px;
+}
+
+.commission {
+  margin-top: 15px;
+  font-size: 18px;
+}
+
+.wallet-actions {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.money-button {
+  border: none;
+  background: #ffb000;
+  padding: 15px 25px;
+  border-radius: 12px;
+  font-size: 17px;
+  font-weight: bold;
+}
+
+/* SERVICES */
+
+.services-section {
+  width: 100%;
+  padding: 20px;
+  text-align: center;
+}
+
+.services-section h2 {
+  font-size: 28px;
+  margin-bottom: 25px;
+}
+
+.service-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  width: 100%;
+}
+
+.service-card {
+  width: 100%;
+  min-height: 95px;
+  border: none;
+  background: #ffb000;
+  border-radius: 12px;
+  padding: 15px 10px;
+  font-size: 17px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.service-icon {
+  font-size: 25px;
+  margin-bottom: 8px;
+}
+
+/* MESSAGE */
+
+.message {
+  text-align: center;
+  margin: 20px;
+  font-weight: bold;
+}
+
+/* BOTTOM NAVIGATION */
+
+.bottom-nav {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  padding: 15px;
+  background: white;
+  text-align: center;
+}
+
+.bottom-item,
+.plus-button {
+  border: none;
+  background: transparent;
+  text-decoration: none;
+  color: #172033;
+  font-size: 15px;
+  font-weight: bold;
+}
+
+.plus-button {
+  background: #ffb000;
+  border-radius: 12px;
+  padding: 12px 5px;
+}
+
+/* LOGOUT */
+
+.logout-button {
+  margin-top: 20px;
+  background: #dc2626;
+  color: white;
+  border: none;
+  padding: 13px 25px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+/* SMALL PHONES */
+
+@media (max-width: 400px) {
+  .service-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .service-card {
+    min-height: 85px;
+    font-size: 15
   </style>
 </head>
 
