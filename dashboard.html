@@ -510,12 +510,21 @@ async function loadAccount() {
 
   }
 }
+}
+ 
+balanceToggle.addEventListener("click", function () {
+  const balance = Number(walletBalance.dataset.balance || 0);
+
+  if (walletBalance.textContent.includes("••••")) {
+    walletBalance.textContent = `₦${balance.toFixed(2)}`;
+  } else {
+    walletBalance.textContent = "₦••••••";
+  }
+});
 
 
 /* Logout */
 logoutButton.addEventListener("click", async function () {
-balanceToggle.addEventListener("click", function () {
-  const balance = Number(walletBalance.dataset.balance || 0);
 
   if (walletBalance.textContent.includes("••••")) {
     walletBalance.textContent = `₦${balance.toFixed(2)}`;
