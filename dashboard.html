@@ -513,15 +513,15 @@ async function loadAccount() {
 }
  
 balanceToggle.addEventListener("click", function () {
-  const balance = Number(walletBalance.dataset.balance || 0);
+  const isHidden = walletBalance.textContent.includes("••••");
 
-  if (walletBalance.textContent.includes("••••")) {
+  if (isHidden) {
+    const balance = Number(walletBalance.dataset.balance || 0);
     walletBalance.textContent = `₦${balance.toFixed(2)}`;
   } else {
     walletBalance.textContent = "₦••••••";
   }
 });
-
 
 /* Logout */
 logoutButton.addEventListener("click", async function () {
