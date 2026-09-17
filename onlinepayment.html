@@ -92,7 +92,13 @@ async function payWithPaystack() {
     return;
   }
 
-  const paystack = new PaystackPop();
+  if (typeof PaystackPop === "undefined") {
+  message.textContent =
+    "Paystack library did not load. Please refresh the page and try again.";
+  return;
+}
+
+const paystack = new PaystackPop();
 
   paystack.newTransaction({
 
