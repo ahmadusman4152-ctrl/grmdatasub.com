@@ -526,13 +526,6 @@ balanceToggle.addEventListener("click", function () {
 /* Logout */
 logoutButton.addEventListener("click", async function () {
 
-  if (walletBalance.textContent.includes("••••")) {
-    walletBalance.textContent = `₦${balance.toFixed(2)}`;
-  } else {
-    walletBalance.textContent = "₦••••••";
-  }
-});
-
   try {
 
     await fetch(
