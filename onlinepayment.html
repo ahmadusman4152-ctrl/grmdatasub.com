@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -36,6 +35,8 @@
         Pay Now
       </button>
 
+      <p id="message"></p>
+
     </div>
 
     <br>
@@ -54,38 +55,90 @@
 <script src="https://js.paystack.co/v2/inline.js"></script>
 
 <script>
-function payWithPaystack() {
 
-  const amount = document.getElementById("amount").value;
+async function payWithPaystack() {
+
+  const amount = Number(
+    document.getElementById("amount").value
+  );
+
+  const message = document.getElementById("message");
 
   if (!amount || amount < 100) {
-    alert("Please enter at least ₦100.");
+    message.textContent =
+      "Please enter at least ₦100.";
+    return;
+  }
+
+  const token =
+    localStorage.getItem("grm_auth_token");
+
+  const savedUser =
+    localStorage.getItem("grm_user");
+
+  if (!token || !savedUser) {
+    message.textContent =
+      "Please login first.";
+    return;
+  }
+
+  const user = JSON.parse(savedUser);
+
+  const email = user.email;
+
+  if (!email) {
+    message.textContent =
+      "User email was not found.";
     return;
   }
 
   const paystack = new PaystackPop();
 
   paystack.newTransaction({
-    key: "pk_test_bab420a74706defe3912e84c91d33abe930ba513", 
-    email: "customer@example.com",
-    amount: Number(amount) * 100,
+
+    /*
+      KEEP YOUR EXISTING PAYSTACK TEST PUBLIC KEY HERE.
+      Do not use a secret key in this file.
+    */
+    key: "YOUR_EXISTING_TEST_PUBLIC_KEY",
+
+    email: email,
+
+    amount: amount * 100,
+
     currency: "NGN",
 
     onSuccess: function(transaction) {
-      alert(
-        "Payment successful! Reference: " +
-        transaction.reference
-      );
-    },
- onCancel: function() {
-  alert("Payment was cancelled.");
-},
 
-onError: function(error) {
-  alert("Paystack Error: " + error.message);
-}
+      message.textContent =
+        "Test payment successful. Reference: " +
+        transaction.reference;
+
+      /*
+        Wallet credit will be connected through
+        backend verification in the next step.
+      */
+
+    },
+
+    onCancel: function() {
+
+      message.textContent =
+        "Payment was cancelled.";
+
+    },
+
+    onError: function(error) {
+
+      message.textContent =
+        "Paystack Error: " +
+        error.message;
+
+    }
+
   });
 }
+
 </script>
 
 </body>
