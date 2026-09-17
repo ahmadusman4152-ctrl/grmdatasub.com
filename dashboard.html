@@ -41,98 +41,183 @@
 </head>
 
 <body>
+<body>
 
-<main>
+<div class="app-dashboard">
 
-  <section class="hero">
+  <!-- TOP HEADER -->
+  <header class="top-header">
 
-    <h1>G R M DATA SUB</h1>
+    <div class="profile-area">
+      <div class="profile-icon">👤</div>
 
-    <p>Customer Dashboard</p>
-
-    <h2>Welcome 👋</h2>
-
-    <p class="dashboard-user" id="userName">
-      Loading account...
-    </p>
-
-    <p>Manage your account easily.</p>
-
-    <div class="cards">
-
-      <!-- Wallet -->
-      <div class="card">
-
-        <h3>Wallet</h3>
-
-        <div class="wallet-balance" id="walletBalance">
-          ₦0.00
+      <div>
+        <div class="welcome-small">Hi</div>
+        <div class="profile-name" id="userName">
+          Loading...
         </div>
+        <div class="subscriber">Subscriber</div>
+      </div>
+    </div>
 
-        <a href="fundwallet.html">
-          <button type="button">Fund Wallet</button>
-        </a>
+    <div class="header-icons">
+      <button type="button" class="icon-button">⚙️</button>
+      <button type="button" class="icon-button">🔔</button>
+    </div>
 
+  </header>
+
+
+  <!-- WALLET SECTION -->
+  <section class="wallet-section">
+
+    <div class="wallet-title">
+      Wallet Balance
+    </div>
+
+    <div class="wallet-row">
+      <div class="wallet-balance" id="walletBalance">
+        ₦0.00
       </div>
 
+      <button type="button" class="eye-button">
+        👁
+      </button>
+    </div>
 
-      <!-- Buy Data -->
-      <div class="card">
+    <div class="commission">
+      Commission: <strong>₦0.00</strong>
+    </div>
 
-        <h3>Buy Data</h3>
+    <div class="wallet-actions">
 
-        <p>Choose your network and data plan.</p>
+      <a href="fundwallet.html" class="money-button">
+        <span>＋</span>
+        Add Money
+      </a>
 
-        <a href="buydata.html">
-          <button type="button">Buy Data</button>
-        </a>
-
-      </div>
-<!-- Buy Airtime -->
-<div class="card">
-
-    <h3>📱 Buy Airtime</h3>
-
-    <p>Buy airtime quickly and easily.</p>
-
-    <a href="buyairtime.html">
-        <button type="button">Buy Airtime</button>
-    </a>
-
-</div>
-
-      <!-- Transactions -->
-      <div class="card">
-
-        <h3>Transactions</h3>
-
-        <p>View your transaction history.</p>
-
-        <button type="button" onclick="viewTransactions()">
-          View Transactions
-        </button>
-
-      </div>
+      <button type="button" class="money-button">
+        <span>↓</span>
+        Withdraw
+      </button>
 
     </div>
 
-    <p class="message" id="message"></p>
+  </section>
 
-    <button
-      type="button"
-      class="logout-button"
-      id="logoutButton">
-      Logout
-    </button>
 
-    <p>
-      <a href="index.html">Back to Home</a>
-    </p>
+  <!-- SERVICES -->
+  <section class="services-section">
+
+    <h2>What Would You Like To Do Today?</h2>
+
+    <div class="service-grid">
+
+      <a href="buyairtime.html" class="service-card">
+        <div class="service-icon">📞</div>
+        <div>Airtime</div>
+      </a>
+
+      <a href="buydata.html" class="service-card">
+        <div class="service-icon">📶</div>
+        <div>Data</div>
+      </a>
+
+      <button type="button" class="service-card">
+        <div class="service-icon">📺</div>
+        <div>TV</div>
+      </button>
+
+      <button type="button" class="service-card">
+        <div class="service-icon">⚡</div>
+        <div>Electricity</div>
+      </button>
+
+
+      <button type="button" class="service-card">
+        <div class="service-icon">🎫</div>
+        <div>Exam Pin</div>
+      </button>
+
+      <button type="button" class="service-card">
+        <div class="service-icon">🔄</div>
+        <div>Airtime Swap</div>
+      </button>
+
+      <button type="button" class="service-card">
+        <div class="service-icon">📱</div>
+        <div>Airtime Pin</div>
+      </button>
+
+      <button type="button" class="service-card">
+        <div class="service-icon">📡</div>
+        <div>Data Pin</div>
+      </button>
+
+
+      <button type="button" class="service-card">
+        <div class="service-icon">😊</div>
+        <div>Smile</div>
+      </button>
+
+      <button type="button" class="service-card">
+        <div class="service-icon">☎️</div>
+        <div>Alpha</div>
+      </button>
+
+      <button type="button" class="service-card">
+        <div class="service-icon">👥</div>
+        <div>Referrals</div>
+      </button>
+
+      <button
+        type="button"
+        class="service-card"
+        id="logoutButton"
+      >
+        <div class="service-icon">🚪</div>
+        <div>Logout</div>
+      </button>
+
+    </div>
 
   </section>
 
-</main>
 
+  <!-- MESSAGE -->
+  <p class="message" id="message"></p>
+
+
+  <!-- BOTTOM NAVIGATION -->
+  <nav class="bottom-nav">
+
+    <a href="dashboard.html" class="bottom-item active">
+      <span>⌂</span>
+      <small>Home</small>
+    </a>
+
+    <button type="button" class="bottom-item">
+      <span>☰</span>
+      <small>History</small>
+    </button>
+
+    <a href="fundwallet.html" class="plus-button">
+      ＋
+    </a>
+
+    <button type="button" class="bottom-item">
+      <span>👤</span>
+      <small>Profile</small>
+    </button>
+
+    <button type="button" class="bottom-item">
+      <span>✉️</span>
+      <small>Support</small>
+    </button>
+
+  </nav>
+
+</div>
 
 <script>
 
