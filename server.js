@@ -385,6 +385,18 @@ async function initializeDatabase() {
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     )
   `);
+    
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS wallet_transactions (
+      id UUID PRIMARY KEY,
+      user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      reference TEXT UNIQUE NOT NULL,
+      amount NUMERIC(12, 2) NOT NULL,
+      currency TEXT NOT NULL,
+      status TEXT NOT NULL,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `);
 
   console.log("Database tables are ready.");
 }
