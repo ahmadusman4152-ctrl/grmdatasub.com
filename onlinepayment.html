@@ -113,7 +113,51 @@ const paystack = new PaystackPop();
 
     currency: "NGN",
 
-    onSuccess: function(transaction) {
+    onSuccess: async function(transaction) {
+
+  message.textContent =
+    "Payment received. Verifying transaction...";
+
+  try {
+
+    const response = await fetch(
+      "https://api.grmdatasub.com/api/paystack/verify",
+      {
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+
+        body: JSON.stringify({
+          reference: transaction.reference
+        })
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      message.textContent =
+        data.message || "Payment verification failed.";
+      return;
+    }
+
+    message.textContent =
+      `Wallet funded successfully. ₦${Number(
+        data.amount
+      ).toFixed(2)} added.`;
+
+  } catch (error) {
+
+    console.error(error);
+
+    message.textContent =
+      "Unable to verify payment. Please try again.";
+  }
+
+},
 
       message.textContent =
         "Test payment successful. Reference: " +
