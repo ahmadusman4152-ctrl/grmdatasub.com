@@ -328,7 +328,185 @@ app.get("/api/me", async (req, res) => {
     });
   }
 });
+|
+// Paystack verification
+app.post("/api/paystack/verify", async (req, res) => {
+  try {
+    const auth = req.headers.authorization || "";
 
+    if (!auth.startsWith("Bearer ")) {
+      return res.status(401).json({
+        message: "Authentication required."
+      });
+    }
+
+    const token = auth.substring(7);
+
+    const tokenHash = crypto
+      .createHash("sha256")
+      .update(token)
+      .digest("hex");
+
+    const userResult = await pool.query(
+      `
+      SELECT u.id, u.email
+      FROM sessions s
+      JOIN users u ON u.id = s.user_id
+      WHERE s.token_hash = $1
+      AND s.expires_at > NOW()
+      LIMIT 1
+      `,
+      [tokenHash]
+    );
+
+    if (userResult.rows.length === 0) {
+      return res.status(401).json({
+        message: "Session expired or invalid."
+      });
+    }
+
+    const user = userResult.rows[0];
+
+    const { reference } = req.body;
+
+    if (!reference || typeof reference !== "string") {
+      return res.status(400).json({
+        message: "Transaction reference is required."
+      });
+    }
+
+    if (!process.env.PAYSTACK_SECRET_KEY) {
+      return res.status(500).json({
+        message: "Paystack secret key is not configured."
+      });
+    }
+
+    const paystackResponse = await fetch(
+      `https://api.paystack.co/transaction/verify/${encodeURIComponent(reference)}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`
+        }
+      }
+    );
+
+    const paystackData = await paystackResponse.json();
+
+    if (!paystackResponse.ok || !paystackData.status) {
+      return res.status(400).json({
+        message: "Unable to verify Paystack transaction."
+      });
+    }
+
+    const transaction = paystackData.data;
+
+    if (transaction.status !== "success") {
+      return res.status(400).json({
+        message: "Payment was not successful."
+      });
+    }
+
+    if (transaction.currency !== "NGN") {
+      return res.status(400).json({
+        message: "Invalid transaction currency."
+      });
+    }
+
+    const transactionEmail = String(
+      transaction.customer?.email || ""
+    ).trim().toLowerCase();
+
+    if (transactionEmail !== user.email.toLowerCase()) {
+      return res.status(403).json({
+        message: "Transaction does not belong to this account."
+      });
+    }
+
+    const amountNaira = Number(transaction.amount) / 100;
+
+    if (!Number.isFinite(amountNaira) || amountNaira <= 0) {
+      return res.status(400).json({
+        message: "Invalid transaction amount."
+      });
+    }
+
+    const client = await pool.connect();
+
+    try {
+      await client.query("BEGIN");
+
+      const transactionResult = await client.query(
+        `
+        INSERT INTO wallet_transactions
+        (
+          id,
+          user_id,
+          reference,
+          amount,
+          currency,
+          status
+        )
+        VALUES ($1, $2, $3, $4, $5, $6)
+        ON CONFLICT (reference) DO NOTHING
+        RETURNING id
+        `,
+        [
+          crypto.randomUUID(),
+          user.id,
+          reference,
+          amountNaira,
+          transaction.currency,
+          transaction.status
+        ]
+      );
+
+      if (transactionResult.rows.length === 0) {
+        await client.query("ROLLBACK");
+
+        return res.status(409).json({
+          message: "This transaction has already been credited."
+        });
+      }
+
+      const updatedUser = await client.query(
+        `
+        UPDATE users
+        SET
+          wallet_balance = wallet_balance + $1,
+          updated_at = NOW()
+        WHERE id = $2
+        RETURNING wallet_balance
+        `,
+        [amountNaira, user.id]
+      );
+
+      await client.query("COMMIT");
+
+      return res.json({
+        message: "Wallet funded successfully.",
+        amount: amountNaira,
+        walletBalance: updatedUser.rows[0].wallet_balance,
+        reference
+      });
+
+    } catch (error) {
+      await client.query("ROLLBACK");
+      throw error;
+    } finally {
+      client.release();
+    }
+
+  } catch (error) {
+    console.error("Paystack verification error:", error);
+
+    res.status(500).json({
+      message: "Unable to verify payment. Please try again."
+    });
+  }
+});
+ // Logout
+app.post("/api/logout", async (req, res) => {
 // Logout
 app.post("/api/logout", async (req, res) => {
   try {
