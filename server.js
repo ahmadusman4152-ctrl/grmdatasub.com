@@ -505,8 +505,6 @@ app.post("/api/paystack/verify", async (req, res) => {
     });
   }
 });
- // Logout
-app.post("/api/logout", async (req, res) => {
 // Logout
 app.post("/api/logout", async (req, res) => {
   try {
