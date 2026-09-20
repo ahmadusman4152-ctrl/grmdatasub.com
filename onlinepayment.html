@@ -119,43 +119,51 @@ const paystack = new PaystackPop();
     "Payment received. Verifying transaction...";
 
   try {
+  let verified = false;
+  let data = null;
 
+  for (let attempt = 1; attempt <= 5; attempt++) {
     const response = await fetch(
       "https://api.grmdatasub.com/api/paystack/verify",
       {
         method: "POST",
-
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`
         },
-
         body: JSON.stringify({
           reference: transaction.reference
         })
       }
     );
 
-    const data = await response.json();
+    data = await response.json();
 
-    if (!response.ok) {
-      message.textContent =
-        data.message || "Payment verification failed.";
-      return;
+    if (response.ok) {
+      verified = true;
+      break;
     }
 
-    message.textContent =
-      `Wallet funded successfully. ₦${Number(
-        data.amount
-      ).toFixed(2)} added.`;
-
-  } catch (error) {
-
-    console.error(error);
-
-    message.textContent =
-      "Unable to verify payment. Please try again.";
+    if (attempt < 5) {
+      await new Promise(resolve => setTimeout(resolve, 3000));
+    }
   }
+
+  if (!verified) {
+    message.textContent =
+      data?.message || "Payment verification failed. Please try again.";
+    return;
+  }
+
+  message.textContent =
+    `Wallet funded successfully. ₦${Number(data.amount).toFixed(2)} added.`;
+
+} catch (error) {
+  console.error(error);
+
+  message.textContent =
+    "Unable to verify payment. Please try again.";
+}
 
     },
 
