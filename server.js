@@ -328,7 +328,6 @@ app.get("/api/me", async (req, res) => {
     });
   }
 });
-|
 // Paystack verification
 app.post("/api/paystack/verify", async (req, res) => {
   try {
