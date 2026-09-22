@@ -537,38 +537,6 @@ app.post("/api/logout", async (req, res) => {
   }
 });
 
-// Logout
-app.post("/api/logout", async (req, res) => {
-  try {
-    const auth = req.headers.authorization || "";
-
-    if (auth.startsWith("Bearer ")) {
-      const token = auth.substring(7);
-
-      const tokenHash = crypto
-        .createHash("sha256")
-        .update(token)
-        .digest("hex");
-
-      await pool.query(
-        "DELETE FROM sessions WHERE token_hash = $1",
-        [tokenHash]
-      );
-    }
-
-    res.json({
-      message: "Logged out successfully."
-    });
-
-  } catch (error) {
-    console.error("Logout error:", error);
-
-    res.status(500).json({
-      message: "Unable to logout."
-    });
-  }
-});
-
 // Create database tables
 async function initializeDatabase() {
   await pool.query(`
