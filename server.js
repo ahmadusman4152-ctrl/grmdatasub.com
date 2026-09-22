@@ -572,6 +572,309 @@ app.get("/api/transactions", async (req, res) => {
     });
   }
 });
+// Airtime purchase
+app.post("/api/airtime", async (req, res) => {
+  let client;
+
+  try {
+    const auth = req.headers.authorization || "";
+
+    if (!auth.startsWith("Bearer ")) {
+      return res.status(401).json({
+        message: "Authentication required."
+      });
+    }
+
+    const token = auth.substring(7);
+
+    const tokenHash = crypto
+      .createHash("sha256")
+      .update(token)
+      .digest("hex");
+
+    const userResult = await pool.query(
+      `
+      SELECT u.id, u.email, u.wallet_balance
+      FROM sessions s
+      JOIN users u ON u.id = s.user_id
+      WHERE s.token_hash = $1
+      AND s.expires_at > NOW()
+      LIMIT 1
+      `,
+      [tokenHash]
+    );
+
+    if (userResult.rows.length === 0) {
+      return res.status(401).json({
+        message: "Session expired or invalid."
+      });
+    }
+
+    const user = userResult.rows[0];
+
+    const { network, phone, amount } = req.body;
+
+    const serviceMap = {
+      MTN: "mtn",
+      Airtel: "airtel",
+      Glo: "glo",
+      "9mobile": "etisalat"
+    };
+
+    const serviceID = serviceMap[network];
+
+    if (!serviceID) {
+      return res.status(400).json({
+        message: "Invalid network."
+      });
+    }
+
+    if (!/^\d{11}$/.test(String(phone || ""))) {
+      return res.status(400).json({
+        message: "Please enter a valid 11-digit phone number."
+      });
+    }
+
+    const amountNumber = Number(amount);
+
+    if (
+      !Number.isFinite(amountNumber) ||
+      amountNumber < 50 ||
+      amountNumber > 100000
+    ) {
+      return res.status(400).json({
+        message: "Airtime amount must be between ₦50 and ₦100,000."
+      });
+    }
+
+    const requestId =
+      new Date()
+        .toLocaleString("en-GB", {
+          timeZone: "Africa/Lagos",
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false
+        })
+        .replace(/\D/g, "")
+        .slice(4) +
+      crypto.randomBytes(8).toString("hex");
+
+    client = await pool.connect();
+
+    await client.query("BEGIN");
+
+    const lockedUser = await client.query(
+      `
+      SELECT wallet_balance
+      FROM users
+      WHERE id = $1
+      FOR UPDATE
+      `,
+      [user.id]
+    );
+
+    if (lockedUser.rows.length === 0) {
+      await client.query("ROLLBACK");
+
+      return res.status(404).json({
+        message: "User account not found."
+      });
+    }
+
+    const walletBalance = Number(
+      lockedUser.rows[0].wallet_balance
+    );
+
+    if (walletBalance < amountNumber) {
+      await client.query("ROLLBACK");
+
+      return res.status(400).json({
+        message: "Insufficient wallet balance."
+      });
+    }
+
+    await client.query(
+      `
+      UPDATE users
+      SET wallet_balance = wallet_balance - $1,
+          updated_at = NOW()
+      WHERE id = $2
+      `,
+      [amountNumber, user.id]
+    );
+
+    await client.query(
+      `
+      INSERT INTO wallet_transactions
+      (
+        id,
+        user_id,
+        reference,
+        amount,
+        currency,
+        status
+      )
+      VALUES ($1, $2, $3, $4, $5, $6)
+      `,
+      [
+        crypto.randomUUID(),
+        user.id,
+        requestId,
+        -amountNumber,
+        "NGN",
+        "pending"
+      ]
+    );
+
+    await client.query("COMMIT");
+    client.release();
+    client = null;
+
+    const vtpassBaseUrl =
+      process.env.VTPASS_BASE_URL ||
+      "https://sandbox.vtpass.com/api";
+
+    const apiKey = process.env.VTPASS_API_KEY;
+    const secretKey = process.env.VTPASS_SECRET_KEY;
+
+    if (!apiKey || !secretKey) {
+      return res.status(500).json({
+        message: "VTpass API credentials are not configured."
+      });
+    }
+
+    const vtpassResponse = await fetch(
+      `${vtpassBaseUrl}/pay`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "api-key": apiKey,
+          "secret-key": secretKey
+        },
+        body: JSON.stringify({
+          request_id: requestId,
+          serviceID,
+          amount: amountNumber,
+          phone: String(phone)
+        })
+      }
+    );
+
+    const vtpassData = await vtpassResponse.json();
+
+    const responseCode = String(vtpassData.code || "");
+    const transactionStatus =
+      vtpassData?.content?.transactions?.status || "";
+
+    if (
+      responseCode === "000" &&
+      transactionStatus === "delivered"
+    ) {
+      await pool.query(
+        `
+        UPDATE wallet_transactions
+        SET status = $1
+        WHERE reference = $2
+        AND user_id = $3
+        `,
+        ["success", requestId, user.id]
+      );
+
+      const balanceResult = await pool.query(
+        `
+        SELECT wallet_balance
+        FROM users
+        WHERE id = $1
+        `,
+        [user.id]
+      );
+
+      return res.json({
+        message: "Airtime purchased successfully.",
+        status: "success",
+        reference: requestId,
+        amount: amountNumber,
+        walletBalance:
+          balanceResult.rows[0].wallet_balance
+      });
+    }
+
+    if (
+      responseCode === "016" ||
+      responseCode === "091"
+    ) {
+      await pool.query(
+        `
+        UPDATE users
+        SET wallet_balance = wallet_balance + $1,
+            updated_at = NOW()
+        WHERE id = $2
+        `,
+        [amountNumber, user.id]
+      );
+
+      await pool.query(
+        `
+        UPDATE wallet_transactions
+        SET status = $1
+        WHERE reference = $2
+        AND user_id = $3
+        `,
+        ["failed", requestId, user.id]
+      );
+
+      return res.status(400).json({
+        message:
+          vtpassData.response_description ||
+          "Airtime purchase failed.",
+        status: "failed",
+        reference: requestId
+      });
+    }
+
+    await pool.query(
+      `
+      UPDATE wallet_transactions
+      SET status = $1
+      WHERE reference = $2
+      AND user_id = $3
+      `,
+      ["pending", requestId, user.id]
+    );
+
+    return res.status(202).json({
+      message:
+        "Airtime transaction is still processing. Please check transaction status.",
+      status: "pending",
+      reference: requestId
+    });
+
+  } catch (error) {
+    console.error("Airtime purchase error:", error);
+
+    if (client) {
+      try {
+        await client.query("ROLLBACK");
+      } catch (rollbackError) {
+        console.error(
+          "Airtime rollback error:",
+          rollbackError
+        );
+      }
+
+      client.release();
+    }
+
+    return res.status(500).json({
+      message:
+        "Unable to process airtime purchase. Please try again."
+    });
+  }
+});
 // Logout
 app.post("/api/logout", async (req, res) => {
   try {
