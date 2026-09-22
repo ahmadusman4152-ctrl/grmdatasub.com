@@ -328,57 +328,6 @@ app.get("/api/me", async (req, res) => {
     });
   }
 });
-// Paystack verification
-app.post("/api/paystack/verify", async (req, res) => {
-  try {
-    const auth = req.headers.authorization || "";
-
-    if (!auth.startsWith("Bearer ")) {
-      return res.status(401).json({
-        message: "Authentication required."
-      });
-    }
-
-    const token = auth.substring(7);
-
-    const tokenHash = crypto
-      .createHash("sha256")
-      .update(token)
-      .digest("hex");
-
-    const userResult = await pool.query(
-      `
-      SELECT u.id, u.email
-      FROM sessions s
-      JOIN users u ON u.id = s.user_id
-      WHERE s.token_hash = $1
-      AND s.expires_at > NOW()
-      LIMIT 1
-      `,
-      [tokenHash]
-    );
-
-    if (userResult.rows.length === 0) {
-      return res.status(401).json({
-        message: "Session expired or invalid."
-      });
-    }
-
-    const user = userResult.rows[0];
-
-    const { reference } = req.body;
-
-    if (!reference || typeof reference !== "string") {
-      return res.status(400).json({
-        message: "Transaction reference is required."
-      });
-    }
-
-    if (!process.env.PAYSTACK_SECRET_KEY) {
-      return res.status(500).json({
-        message: "Paystack secret key is not configured."
-      });
-    }
  
 // Paystack verification
 app.post("/api/paystack/verify", async (req, res) => {
