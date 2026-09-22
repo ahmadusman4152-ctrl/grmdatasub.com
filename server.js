@@ -918,64 +918,6 @@ app.post("/api/logout", async (req, res) => {
   }
 });
 
-// Create database tables
-async function initializeDatabase() {
-  await pool.query(`
-    CREATE TABLE IF NOT EXISTS users (
-      id UUID PRIMARY KEY,
-      full_name TEXT NOT NULL,
-      email TEXT UNIQUE NOT NULL,
-      phone TEXT NOT NULL,
-      password_hash TEXT NOT NULL,
-      wallet_balance NUMERIC(12, 2) NOT NULL DEFAULT 0.00,
-      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-    )
-  `);
-
-  await pool.query(`
-    CREATE TABLE IF NOT EXISTS sessions (
-      id UUID PRIMARY KEY,
-      user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-      token_hash TEXT UNIQUE NOT NULL,
-      expires_at TIMESTAMPTZ NOT NULL,
-      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-    )
-  `);
-    
-  await pool.query(`
-    CREATE TABLE IF NOT EXISTS wallet_transactions (
-      id UUID PRIMARY KEY,
-      user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-      reference TEXT UNIQUE NOT NULL,
-      amount NUMERIC(12, 2) NOT NULL,
-      currency TEXT NOT NULL,
-      status TEXT NOT NULL,
-      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-    )
-  `);
-
-  console.log("Database tables are ready.");
-}
-
-// Start server
-async function startServer() {
-  try {
-    await initializeDatabase();
-
-    app.listen(PORT, "0.0.0.0", () => {
-      console.log(
-        `G R M DATA SUB server running on port ${PORT}`
-      );
-    });
-
-  } catch (error) {
-    console.error("Failed to start server:", error);
-    process.exit(1);
-  }
-}
-
-startServer();
 // Logout
 app.post("/api/logout", async (req, res) => {
   try {
