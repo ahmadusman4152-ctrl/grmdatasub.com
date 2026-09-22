@@ -505,6 +505,73 @@ app.post("/api/paystack/verify", async (req, res) => {
     });
   }
 });
+// Transaction history
+app.get("/api/transactions", async (req, res) => {
+  try {
+    const auth = req.headers.authorization || "";
+
+    if (!auth.startsWith("Bearer ")) {
+      return res.status(401).json({
+        message: "Authentication required."
+      });
+    }
+
+    const token = auth.substring(7);
+
+    const tokenHash = crypto
+      .createHash("sha256")
+      .update(token)
+      .digest("hex");
+
+    const userResult = await pool.query(
+      `
+      SELECT u.id
+      FROM sessions s
+      JOIN users u ON u.id = s.user_id
+      WHERE s.token_hash = $1
+        AND s.expires_at > NOW()
+      LIMIT 1
+      `,
+      [tokenHash]
+    );
+
+    if (userResult.rows.length === 0) {
+      return res.status(401).json({
+        message: "Session expired or invalid."
+      });
+    }
+
+    const userId = userResult.rows[0].id;
+
+    const result = await pool.query(
+      `
+      SELECT
+        id,
+        reference,
+        amount,
+        currency,
+        status,
+        created_at
+      FROM wallet_transactions
+      WHERE user_id = $1
+      ORDER BY created_at DESC
+      LIMIT 100
+      `,
+      [userId]
+    );
+
+    res.json({
+      transactions: result.rows
+    });
+
+  } catch (error) {
+    console.error("Transaction history error:", error);
+
+    res.status(500).json({
+      message: "Unable to load transaction history."
+    });
+  }
+});
 // Logout
 app.post("/api/logout", async (req, res) => {
   try {
