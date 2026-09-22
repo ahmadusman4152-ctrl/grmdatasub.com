@@ -423,11 +423,10 @@ body {
       <span>⌂</span>
       <small>Home</small>
     </a>
-
-    <button type="button" class="bottom-item">
-      <span>☰</span>
-      <small>History</small>
-    </button>
+<button type="button" class="bottom-item" onclick="viewTransactions()">
+  <span>☰</span>
+  <small>History</small>
+</button>
 
     <a href="fundwallet.html" class="plus-button">
       ＋
@@ -552,13 +551,54 @@ logoutButton.addEventListener("click", async function () {
 
 
 /* Transactions */
-function viewTransactions() {
+async function viewTransactions() {
+  if (!token) {
+    window.location.href = "login.html";
+    return;
+  }
 
-  message.textContent =
-    "Transaction history will be available here.";
+  message.textContent = "Loading transaction history...";
 
+  try {
+    const response = await fetch(
+      `${API_URL}/api/transactions`,
+      {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      message.textContent =
+        data.message || "Unable to load transaction history.";
+      return;
+    }
+
+    const transactions = data.transactions || [];
+
+    if (transactions.length === 0) {
+      message.textContent = "No transactions found.";
+      return;
+    }
+
+    message.textContent = transactions.map((transaction, index) => {
+      const amount = Number(transaction.amount || 0).toFixed(2);
+      const status = transaction.status || "unknown";
+      const reference = transaction.reference || "N/A";
+
+      return `${index + 1}. ₦${amount} | ${status} | ${reference}`;
+    }).join("\n");
+
+  } catch (error) {
+    console.error("Transaction history error:", error);
+    message.textContent =
+      "Unable to load transaction history. Please try again.";
+  }
 }
-
 
 /* Start */
 loadAccount();
