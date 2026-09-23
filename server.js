@@ -905,6 +905,7 @@ let client;
       "Unable to process airtime purchase. Please try again.",
   });
 }
+  });
   // Logout
 app.post("/api/logout", async (req, res) => {
   try {
