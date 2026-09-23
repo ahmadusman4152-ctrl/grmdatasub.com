@@ -224,7 +224,7 @@ airtimeForm.addEventListener("submit", function(event) {
     }
 
 
-    if (!/^0\d{10}$/.test(phone)) {
+    if (!/^\d{11}$/.test(phone)) {
 
         message.textContent =
             "Please enter a valid 11-digit phone number.";
