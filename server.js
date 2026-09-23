@@ -574,8 +574,8 @@ app.get("/api/transactions", async (req, res) => {
 });
 // Airtime purchase
 app.post("/api/airtime", async (req, res) => {
-letlet client;
-  walletDebited = false;
+let client;
+  let walletDebited = false;
 
   try {
     const auth = req.headers.authorization || "";
