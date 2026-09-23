@@ -200,7 +200,8 @@ const confirmButton =
 
 const cancelButton =
     document.getElementById("cancelButton");
-
+const API_URL = "https://api.grmdatasub.com";
+const token = localStorage.getItem("grm_auth_token");
 
 airtimeForm.addEventListener("submit", function(event) {
 
