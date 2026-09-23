@@ -259,16 +259,79 @@ airtimeForm.addEventListener("submit", function(event) {
     message.textContent = "";
 
 });
+confirmButton.addEventListener("click", async function() {
+  if (!token) {
+    window.location.href = "login.html";
+    return;
+  }
 
+  const network =
+    document.getElementById("network").value;
 
-confirmButton.addEventListener("click", function() {
+  const phone =
+    document.getElementById("phone").value.trim();
+
+  const amount =
+    Number(document.getElementById("amount").value);
+
+  if (!network || !/^\d{11}$/.test(phone) || !amount || amount < 50) {
+    message.textContent =
+      "Please check your network, phone number and amount.";
+    return;
+  }
+
+  confirmButton.disabled = true;
+  confirmButton.textContent = "Processing...";
+  message.textContent = "Processing airtime purchase...";
+
+  try {
+    const response = await fetch(
+      `${API_URL}/api/airtime`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          network,
+          phone,
+          amount
+        })
+      }
+    );
+
+    const data = await response.json();
+
+    if (response.ok && data.status === "success") {
+      message.textContent =
+        `Airtime purchased successfully. Reference: ${data.reference}`;
+
+      summary.style.display = "none";
+      airtimeForm.reset();
+      return;
+    }
+
+    if (data.status === "pending") {
+      message.textContent =
+        `Airtime transaction is still processing. Reference: ${data.reference}`;
+      return;
+    }
 
     message.textContent =
-        "Order confirmation is ready. Airtime processing will be connected after the backend and authorized airtime provider are configured.";
+      data.message || "Airtime purchase failed.";
 
+  } catch (error) {
+    console.error("Airtime purchase error:", error);
+
+    message.textContent =
+      "Unable to process airtime purchase. Please try again.";
+
+  } finally {
+    confirmButton.disabled = false;
+    confirmButton.textContent = "Confirm Order";
+  }
 });
-
-
 cancelButton.addEventListener("click", function() {
 
     summary.style.display = "none";
