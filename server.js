@@ -574,7 +574,8 @@ app.get("/api/transactions", async (req, res) => {
 });
 // Airtime purchase
 app.post("/api/airtime", async (req, res) => {
-  let client;
+letlet client;
+  walletDebited = false;
 
   try {
     const auth = req.headers.authorization || "";
@@ -731,6 +732,7 @@ app.post("/api/airtime", async (req, res) => {
 
     await client.query("COMMIT");
     client.release();
+    walletDebited = true;
     client = null;
 
     const vtpassBaseUrl =
@@ -853,33 +855,60 @@ app.post("/api/airtime", async (req, res) => {
       reference: requestId
     });
 
-  } catch (error) {
-    console.error("Airtime purchase error:", error);
+   } catch (error) {
+  console.error("Airtime purchase error:", error);
 
-    if (client) {
-      try {
-        await client.query("ROLLBACK");
-      } catch (rollbackError) {
-        console.error(
-          "Airtime rollback error:",
-          rollbackError
-        );
-      }
-
-      client.release();
+  if (client) {
+    try {
+      await client.query("ROLLBACK");
+    } catch (rollbackError) {
+      console.error(
+        "Airtime rollback error:",
+        rollbackError
+      );
     }
 
-    return res.status(500).json({
-      message:
-        "Unable to process airtime purchase. Please try again."
-    });
+    client.release();
   }
-});
-// Logout
+
+  if (walletDebited) {
+    try {
+      await pool.query(
+        `
+        UPDATE users
+        SET wallet_balance = wallet_balance + $1,
+            updated_at = NOW()
+        WHERE id = $2
+        `,
+        [amountNumber, user.id]
+      );
+
+      await pool.query(
+        `
+        UPDATE wallet_transactions
+        SET status = $1
+        WHERE reference = $2
+        AND user_id = $3
+        `,
+        ["failed", requestId, user.id]
+      );
+    } catch (refundError) {
+      console.error(
+        "Airtime wallet refund error:",
+        refundError
+      );
+    }
+  }
+
+  return res.status(500).json({
+    message:
+      "Unable to process airtime purchase. Please try again.",
+  });
+}
+  // Logout
 app.post("/api/logout", async (req, res) => {
   try {
-    const auth = req.headers.authorization || "";
-
+    const auth = req.headers.authorization || "";  
     if (auth.startsWith("Bearer ")) {
       const token = auth.substring(7);
 
