@@ -572,6 +572,33 @@ app.get("/api/transactions", async (req, res) => {
     });
   }
 });
+// VTPass transaction status requery
+async function requeryVtpassTransaction(requestId) {
+  const vtpassBaseUrl =
+    process.env.VTPASS_BASE_URL ||
+    "https://sandbox.vtpass.com/api/";
+
+  const apiKey = process.env.VTPASS_API_KEY;
+  const secretKey = process.env.VTPASS_SECRET_KEY;
+
+  if (!apiKey || !secretKey) {
+    throw new Error("VTPass API credentials are not configured.");
+  }
+
+  const response = await fetch(`${vtpassBaseUrl}requery`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "api-key": apiKey,
+      "secret-key": secretKey
+    },
+    body: JSON.stringify({
+      request_id: requestId
+    })
+  });
+
+  return await response.json();
+}
 // Airtime purchase
 app.post("/api/airtime", async (req, res) => {
 let client;
