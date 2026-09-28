@@ -864,7 +864,40 @@ let client;
         reference: requestId
       });
     }
+    const requeryData = await requestVtpassTransaction(requestId);
 
+const requeryStatus = String(
+  requeryData?.content?.transactions?.status || ""
+).toLowerCase();
+
+if (requeryStatus === "delivered") {
+  await pool.query(
+    `
+    UPDATE wallet_transactions
+    SET status = $1
+    WHERE reference = $2
+    AND user_id = $3
+    `,
+    ["success", requestId, user.id]
+  );
+
+  const balanceResult = await pool.query(
+    `
+    SELECT wallet_balance
+    FROM users
+    WHERE id = $1
+    `,
+    [user.id]
+  );
+
+  return res.json({
+    message: "Airtime purchased successfully.",
+    status: "success",
+    reference: requestId,
+    amount: amountNumber,
+    walletBalance: balanceResult.rows[0].wallet_balance
+  });
+}
     await pool.query(
       `
       UPDATE wallet_transactions
