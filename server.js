@@ -603,7 +603,7 @@ async function requeryVtpassTransaction(requestId) {
 app.post("/api/airtime", async (req, res) => {
 let client;
   let walletDebited = false;
-
+let amountNumber = 0;
   try {
     const auth = req.headers.authorization || "";
 
@@ -663,7 +663,7 @@ let client;
       });
     }
 
-    const amountNumber = Number(amount);
+     amountNumber = Number(amount);
 
     if (
       !Number.isFinite(amountNumber) ||
