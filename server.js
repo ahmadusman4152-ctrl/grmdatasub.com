@@ -770,11 +770,8 @@ let amountNumber = 0;
     const secretKey = process.env.VTPASS_SECRET_KEY;
 
     if (!apiKey || !secretKey) {
-      return res.status(500).json({
-        message: "VTpass API credentials are not configured."
-      });
-    }
-
+  throw new Error("VTpass API credentials are not configured.");
+}
     const vtpassResponse = await fetch(
       `${vtpassBaseUrl}/pay`,
       {
