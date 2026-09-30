@@ -861,7 +861,7 @@ let amountNumber = 0;
         reference: requestId
       });
     }
-    const requeryData = await requestVtpassTransaction(requestId);
+    const requeryData = await requeryVtpassTransaction(requestId);
 
 const requeryStatus = String(
   requeryData?.content?.transactions?.status || ""
