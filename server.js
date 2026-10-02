@@ -792,7 +792,12 @@ let amountNumber = 0;
     );
 
     const vtpassData = await vtpassResponse.json();
-
+   console.log("[AIRTIME] VTpass response", {
+  httpStatus: vtpassResponse.status,
+  code: vtpassData?.code,
+  description: vtpassData?.response_description,
+  transactionStatus: vtpassData?.content?.transactions?.status
+});
     const responseCode = String(vtpassData.code || "");
     const transactionStatus =
       vtpassData?.content?.transactions?.status || "";
