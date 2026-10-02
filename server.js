@@ -601,6 +601,7 @@ async function requeryVtpassTransaction(requestId) {
 }
 // Airtime purchase
 app.post("/api/airtime", async (req, res) => {
+console.log("[AIRTIME] Request received");
 let client;
   let walletDebited = false;
 let amountNumber = 0;
