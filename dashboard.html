@@ -550,56 +550,177 @@ logoutButton.addEventListener("click", async function () {
 });
 
 
-/* Transactions */
 async function viewTransactions() {
   if (!token) {
     window.location.href = "login.html";
     return;
   }
 
-  message.textContent = "Loading transaction history...";
+  const historySection = document.getElementById("transactionHistory");
+  const transactionList = document.getElementById("transactionList");
+  const receiptDetails = document.getElementById("receiptDetails");
+  const receiptContent = document.getElementById("receiptContent");
+  const printButton = document.getElementById("printReceipt");
+
+  historySection.style.display = "block";
+  transactionList.textContent = "Loading transaction history...";
+  receiptDetails.style.display = "none";
+  message.textContent = "";
 
   try {
-    const response = await fetch(
-      `${API_URL}/api/transactions`,
-      {
-        method: "GET",
-        headers: {
-          "Authorization": `Bearer ${token}`
-        }
+    const response = await fetch(`${API_URL}/api/transactions`, {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${token}`
       }
-    );
+    });
 
     const data = await response.json();
 
     if (!response.ok) {
-      message.textContent =
+      transactionList.textContent =
         data.message || "Unable to load transaction history.";
       return;
     }
 
-    const transactions = data.transactions || [];
+    const transactions = Array.isArray(data.transactions)
+      ? data.transactions
+      : [];
+
+    transactionList.replaceChildren();
 
     if (transactions.length === 0) {
-      message.textContent = "No transactions found.";
+      transactionList.textContent = "No transactions found.";
       return;
     }
 
-    message.textContent = transactions.map((transaction, index) => {
-      const amount = Number(transaction.amount || 0).toFixed(2);
-      const status = transaction.status || "unknown";
-      const reference = transaction.reference || "N/A";
+    transactions.forEach((transaction, index) => {
+      const card = document.createElement("div");
+      card.style.cssText =
+        "padding:14px;margin:12px 0;border:1px solid #ddd;border-radius:10px;";
 
-      return `${index + 1}. ₦${amount} | ${status} | ${reference}`;
-    }).join("\n");
+      const amount = Number(transaction.amount || 0);
+      const currency = transaction.currency || "NGN";
+      const amountText =
+        `${currency === "NGN" ? "₦" : currency + " "}` +
+        amount.toLocaleString("en-NG", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        });
 
+      const date = transaction.created_at
+        ? new Date(transaction.created_at)
+        : null;
+
+      const dateText =
+        date && !Number.isNaN(date.getTime())
+          ? date.toLocaleString()
+          : "Date unavailable";
+
+      const title = document.createElement("h3");
+      title.textContent = `Transaction ${index + 1}`;
+
+      const amountLine = document.createElement("p");
+      amountLine.textContent = `Amount: ${amountText}`;
+
+      const statusLine = document.createElement("p");
+      statusLine.textContent =
+        `Status: ${transaction.status || "Unknown"}`;
+
+      const referenceLine = document.createElement("p");
+      referenceLine.textContent =
+        `Reference: ${transaction.reference || "N/A"}`;
+
+      const dateLine = document.createElement("p");
+      dateLine.textContent = `Date: ${dateText}`;
+
+      const receiptButton = document.createElement("button");
+      receiptButton.type = "button";
+      receiptButton.textContent = "View Receipt";
+
+      receiptButton.addEventListener("click", () => {
+        receiptContent.replaceChildren();
+
+        const receiptTitle = document.createElement("h3");
+        receiptTitle.textContent = "G R M DATA SUB — Receipt";
+        receiptContent.appendChild(receiptTitle);
+
+        const details = [
+          ["Transaction ID", transaction.id || "N/A"],
+          ["Reference", transaction.reference || "N/A"],
+          ["Amount", amountText],
+          ["Currency", currency],
+          ["Status", transaction.status || "Unknown"],
+          ["Date", dateText]
+        ];
+
+        details.forEach(([label, value]) => {
+          const line = document.createElement("p");
+          const strong = document.createElement("strong");
+          strong.textContent = `${label}: `;
+          line.append(strong, document.createTextNode(String(value)));
+          receiptContent.appendChild(line);
+        });
+
+        receiptDetails.style.display = "block";
+        receiptDetails.scrollIntoView({
+          behavior: "smooth",
+          block: "start"
+        });
+
+        printButton.onclick = () => {
+          const printWindow = window.open("", "_blank");
+
+          if (!printWindow) {
+            message.textContent =
+              "Allow pop-ups to print or save the receipt.";
+            return;
+          }
+
+          printWindow.document.write(`
+            <!DOCTYPE html>
+            <html>
+              <head>
+                <title>G R M DATA SUB Receipt</title>
+                <style>
+                  body {
+                    font-family: Arial, sans-serif;
+                    padding: 24px;
+                    color: #222;
+                  }
+                  h3 { margin-bottom: 20px; }
+                  p { padding: 8px 0; border-bottom: 1px solid #ddd; }
+                </style>
+              </head>
+              <body>${receiptContent.innerHTML}</body>
+            </html>
+          `);
+
+          printWindow.document.close();
+          printWindow.focus();
+          printWindow.print();
+        };
+      };
+
+      card.append(
+        title,
+        amountLine,
+        statusLine,
+        referenceLine,
+        dateLine,
+        receiptButton
+      );
+
+      transactionList.appendChild(card);
+    });
   } catch (error) {
     console.error("Transaction history error:", error);
-    message.textContent =
+    transactionList.textContent =
       "Unable to load transaction history. Please try again.";
   }
 }
 
+    
 /* Start */
 loadAccount();
 
