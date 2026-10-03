@@ -493,12 +493,15 @@ async function loadAccount() {
     userName.textContent =
       `Hello, ${data.user.fullName} 👋`;
 
-    const balance =
-      Number(data.user.walletBalance || 0);
+    userName.textContent =
+  `Hello, ${data.user.fullName} 👋`;
 
-    walletBalance.dataset.balance = balance;
-    walletBalance.textContent =
-      `₦${balance.toFixed(2)}`;
+const balance =
+  Number(data.user.walletBalance || 0);
+
+walletBalance.dataset.balance = balance;
+walletBalance.textContent =
+  `₦${balance.toFixed(2)}`;
 
   } catch (error) {
 
