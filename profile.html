@@ -284,36 +284,72 @@
       </p>
 
       <form id="profileForm">
-        <div class="field">
-          <label for="fullName">Full Name</label>
-          <input id="fullName" name="fullName"
-                 type="text" autocomplete="name" required>
-        </div>
 
-        <div class="field">
-          <label for="email">Email Address</label>
-          <input id="email" name="email"
-                 type="email" autocomplete="email" readonly>
-        </div>
+  <div class="field">
+    <label for="fullName">Full Name</label>
+    <input
+      id="fullName"
+      name="fullName"
+      type="text"
+      autocomplete="name"
+      readonly
+      required
+    >
+  </div>
 
-        <div class="field">
-          <label for="phone">Phone Number</label>
-          <input id="phone" name="phone"
-                 type="tel" autocomplete="tel" readonly>
-        </div>
+  <div class="field">
+    <label for="email">Email Address</label>
+    <input
+      id="email"
+      name="email"
+      type="email"
+      autocomplete="email"
+      readonly
+    >
+  </div>
 
-        <button type="submit" class="primary-button" id="saveButton">
-          Save Profile
-        </button>
+  <div class="field">
+    <label for="phone">Phone Number</label>
+    <input
+      id="phone"
+      name="phone"
+      type="tel"
+      autocomplete="tel"
+      readonly
+    >
+  </div>
 
-        <p class="note">
-          Email and phone are read-only until the server supports
-          securely updating them. Saving a name requires a working
-          profile-update API endpoint.
-        </p>
+  <div class="actions">
+    <button type="button" class="secondary-button" id="editButton">
+      Edit Profile
+    </button>
 
-        <div id="saveMessage" class="message" role="status"></div>
-      </form>
+    <button
+      type="submit"
+      class="primary-button"
+      id="saveButton"
+      disabled
+    >
+      Save Changes
+    </button>
+
+    <button
+      type="button"
+      class="secondary-button"
+      id="cancelButton"
+      style="display:none;"
+    >
+      Cancel
+    </button>
+  </div>
+
+  <p class="note">
+    You can edit your profile after pressing Edit Profile.
+  </p>
+
+  <div id="saveMessage" class="message" role="status"></div>
+
+</form>
     </section>
   </main>
 
