@@ -478,14 +478,6 @@ editButton.addEventListener("click", function () {
   saveMessage.className = "message";
 });
 
-cancelButton.addEventListener("click", function () {
-  fullNameInput.value = fullNameInput.dataset.original || "";
-  setEditMode(false);
-
-  saveMessage.textContent = "";
-  saveMessage.className = "message";
-});
-
 profileForm.addEventListener("submit", async function (event) {
   event.preventDefault();
 
