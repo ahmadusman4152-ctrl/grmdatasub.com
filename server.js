@@ -328,7 +328,88 @@ app.get("/api/me", async (req, res) => {
     });
   }
 });
- 
+// Update current user's profile
+app.put("/api/profile", async (req, res) => {
+  try {
+    const auth = req.headers.authorization || "";
+
+    if (!auth.startsWith("Bearer ")) {
+      return res.status(401).json({
+        message: "Authentication required."
+      });
+    }
+
+    const token = auth.substring(7);
+
+    const tokenHash = crypto
+      .createHash("sha256")
+      .update(token)
+      .digest("hex");
+
+    const userResult = await pool.query(
+      `
+      SELECT u.id
+      FROM sessions s
+      JOIN users u ON u.id = s.user_id
+      WHERE s.token_hash = $1
+      AND s.expires_at > NOW()
+      LIMIT 1
+      `,
+      [tokenHash]
+    );
+
+    if (userResult.rows.length === 0) {
+      return res.status(401).json({
+        message: "Session expired or invalid."
+      });
+    }
+
+    const userId = userResult.rows[0].id;
+    const cleanName = String(req.body.fullName || "").trim();
+
+    if (cleanName.length < 2 || cleanName.length > 100) {
+      return res.status(400).json({
+        message: "Please enter a valid full name."
+      });
+    }
+
+    const result = await pool.query(
+      `
+      UPDATE users
+      SET full_name = $1
+      WHERE id = $2
+      RETURNING id, full_name, email, phone, wallet_balance
+      `,
+      [cleanName, userId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        message: "User account not found."
+      });
+    }
+
+    const user = result.rows[0];
+
+    return res.json({
+      message: "Profile updated successfully.",
+      user: {
+        id: user.id,
+        fullName: user.full_name,
+        email: user.email,
+        phone: user.phone,
+        walletBalance: user.wallet_balance
+      }
+    });
+
+  } catch (error) {
+    console.error("Profile update error:", error);
+
+    return res.status(500).json({
+      message: "Unable to update profile. Please try again."
+    });
+  }
+}); 
 // Paystack verification
 app.post("/api/paystack/verify", async (req, res) => {
   try {
