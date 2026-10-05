@@ -431,6 +431,7 @@
         profileName.textContent = name || "User";
         profileEmail.textContent = user.email || "";
         fullNameInput.value = name;
+        fullNameInput.dataset.original = name;
         emailInput.value = user.email || "";
         phoneInput.value = user.phone || "";
 
