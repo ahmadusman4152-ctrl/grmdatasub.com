@@ -456,19 +456,53 @@
         );
       }
     }
+ const editButton = document.getElementById("editButton");
+const cancelButton = document.getElementById("cancelButton");
+const profileForm = document.getElementById("profileForm");
 
-    document.getElementById("profileForm").addEventListener(
-      "submit",
-      async function (event) {
-        event.preventDefault();
+function setEditMode(editing) {
+  fullNameInput.readOnly = !editing;
+  editButton.style.display = editing ? "none" : "inline-block";
+  cancelButton.style.display = editing ? "inline-block" : "none";
+  saveButton.disabled = !editing;
 
-        showMessage(
-          saveMessage,
-          "Profile editing is not enabled yet. The server must support a secure profile-update endpoint before changes can be saved.",
-          "error"
-        );
-      }
-    );
+  if (!editing) {
+    saveButton.disabled = true;
+  }
+}
+
+editButton.addEventListener("click", function () {
+  setEditMode(true);
+  fullNameInput.focus();
+  saveMessage.textContent = "";
+  saveMessage.className = "message";
+});
+
+fullNameInput.addEventListener("input", function () {
+  const originalName = fullNameInput.dataset.original || "";
+  const changed =
+    fullNameInput.value.trim() !== originalName.trim();
+
+  saveButton.disabled = !changed;
+});
+
+cancelButton.addEventListener("click", function () {
+  fullNameInput.value = fullNameInput.dataset.original || "";
+  setEditMode(false);
+
+  saveMessage.textContent = "";
+  saveMessage.className = "message";
+});
+
+profileForm.addEventListener("submit", function (event) {
+  event.preventDefault();
+
+  showMessage(
+    saveMessage,
+    "Your changes are ready, but the secure server update is not connected yet.",
+    "error"
+  );
+});
 
     loadProfile();
   </script>
