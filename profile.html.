@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Profile - G R M DATA SUB</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #f3f6fb;
+      color: #182230;
+      min-height: 100vh;
+    }
+
+    header {
+      background: #073b2a;
+      color: white;
+      padding: 20px 16px;
+    }
+
+    .header-inner {
+      max-width: 760px;
+      margin: auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    header h1 {
+      font-size: 21px;
+    }
+
+    header p {
+      font-size: 12px;
+      margin-top: 5px;
+      opacity: .85;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 760px;
+      margin: 24px auto;
+      padding: 0 14px 30px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 15px;
+      padding: 22px;
+      margin-bottom: 18px;
+      box-shadow: 0 4px 18px rgba(0,0,0,.06);
+    }
+
+    .profile-top {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 22px;
+    }
+
+    .avatar {
+      width: 65px;
+      height: 65px;
+      border-radius: 50%;
+      background: #d9f4e5;
+      color: #087443;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    .profile-top h2 {
+      font-size: 20px;
+      overflow-wrap: anywhere;
+    }
+
+    .muted {
+      color: #697586;
+      font-size: 14px;
+      margin-top: 6px;
+      overflow-wrap: anywhere;
+    }
+
+    .balance-card {
+      background: #073b2a;
+      color: white;
+      border-radius: 14px;
+      padding: 22px;
+      margin-bottom: 20px;
+    }
+
+    .balance-label {
+      font-size: 14px;
+      opacity: .85;
+    }
+
+    .balance-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    #walletBalance {
+      font-size: 29px;
+      font-weight: bold;
+      overflow-wrap: anywhere;
+    }
+
+    button, .link-button {
+      border: 0;
+      border-radius: 8px;
+      padding: 12px 15px;
+      font-size: 14px;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .light-button {
+      background: white;
+      color: #073b2a;
+    }
+
+    .primary-button {
+      background: #087443;
+      color: white;
+      width: 100%;
+      margin-top: 8px;
+    }
+
+    .secondary-button {
+      background: #e9f5ee;
+      color: #075d38;
+    }
+
+    .field {
+      margin-top: 17px;
+    }
+
+    label {
+      display: block;
+      font-size: 14px;
+      font-weight: bold;
+      margin-bottom: 7px;
+    }
+
+    input {
+      width: 100%;
+      border: 1px solid #d6dde5;
+      border-radius: 8px;
+      padding: 13px;
+      font-size: 15px;
+      background: #fff;
+      color: #182230;
+    }
+
+    input[readonly] {
+      background: #f4f6f8;
+    }
+
+    .section-title {
+      font-size: 19px;
+      margin-bottom: 8px;
+    }
+
+    .message {
+      display: none;
+      padding: 12px;
+      margin-top: 14px;
+      border-radius: 8px;
+      font-size: 14px;
+      overflow-wrap: anywhere;
+    }
+
+    .error {
+      display: block;
+      background: #fff0f0;
+      color: #a32121;
+    }
+
+    .success {
+      display: block;
+      background: #e8f8ee;
+      color: #17663a;
+    }
+
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .actions a {
+      font-size: 14px;
+    }
+
+    .note {
+      font-size: 12px;
+      color: #697586;
+      line-height: 1.5;
+      margin-top: 12px;
+    }
+
+    @media (max-width: 420px) {
+      .card {
+        padding: 17px;
+      }
+
+      #walletBalance {
+        font-size: 24px;
+      }
+
+      .actions {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="header-inner">
+      <div>
+        <h1>G R M DATA SUB</h1>
+        <p>My Account Profile</p>
+      </div>
+      <a class="link-button light-button" href="dashboard.html">
+        Dashboard
+      </a>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <div class="profile-top">
+        <div class="avatar" id="avatar">U</div>
+        <div>
+          <h2 id="profileName">Loading profile...</h2>
+          <p class="muted" id="profileEmail">Loading email...</p>
+        </div>
+      </div>
+
+      <div class="balance-card">
+        <p class="balance-label">Wallet Balance</p>
+        <div class="balance-row">
+          <strong id="walletBalance">₦0.00</strong>
+          <button type="button" class="light-button" id="toggleBalance">
+            Hide
+          </button>
+        </div>
+      </div>
+
+      <div class="actions">
+        <a class="link-button secondary-button" href="fundwallet.html">
+          Fund Wallet
+        </a>
+        <a class="link-button secondary-button" href="dashboard.html">
+          Back to Dashboard
+        </a>
+      </div>
+
+      <div id="loadMessage" class="message" role="status"></div>
+    </section>
+
+    <section class="card">
+      <h2 class="section-title">Personal Information</h2>
+      <p class="muted">
+        Your account details are shown below.
+      </p>
+
+      <form id="profileForm">
+        <div class="field">
+          <label for="fullName">Full Name</label>
+          <input id="fullName" name="fullName"
+                 type="text" autocomplete="name" required>
+        </div>
+
+        <div class="field">
+          <label for="email">Email Address</label>
+          <input id="email" name="email"
+                 type="email" autocomplete="email" readonly>
+        </div>
+
+        <div class="field">
+          <label for="phone">Phone Number</label>
+          <input id="phone" name="phone"
+                 type="tel" autocomplete="tel" readonly>
+        </div>
+
+        <button type="submit" class="primary-button" id="saveButton">
+          Save Profile
+        </button>
+
+        <p class="note">
+          Email and phone are read-only until the server supports
+          securely updating them. Saving a name requires a working
+          profile-update API endpoint.
+        </p>
+
+        <div id="saveMessage" class="message" role="status"></div>
+      </form>
+    </section>
+  </main>
+
+  <script>
+    const API_BASE = "https://api.grmdatasub.com";
+
+    const profileName = document.getElementById("profileName");
+    const profileEmail = document.getElementById("profileEmail");
+    const fullNameInput = document.getElementById("fullName");
+    const emailInput = document.getElementById("email");
+    const phoneInput = document.getElementById("phone");
+    const walletBalance = document.getElementById("walletBalance");
+    const avatar = document.getElementById("avatar");
+    const loadMessage = document.getElementById("loadMessage");
+    const saveMessage = document.getElementById("saveMessage");
+    const saveButton = document.getElementById("saveButton");
+    const toggleBalance = document.getElementById("toggleBalance");
+
+    let currentBalance = 0;
+    let balanceVisible = true;
+
+    function getToken() {
+      return localStorage.getItem("token") ||
+             sessionStorage.getItem("token") ||
+             "";
+    }
+
+    function showMessage(element, message, type) {
+      element.textContent = message;
+      element.className = "message " + type;
+    }
+
+    function renderBalance() {
+      walletBalance.textContent = balanceVisible
+        ? "₦" + currentBalance.toLocaleString("en-NG", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+          })
+        : "₦••••••";
+
+      toggleBalance.textContent = balanceVisible ? "Hide" : "Show";
+    }
+
+    toggleBalance.addEventListener("click", function () {
+      balanceVisible = !balanceVisible;
+      renderBalance();
+    });
+
+    async function loadProfile() {
+      const token = getToken();
+
+      if (!token) {
+        showMessage(
+          loadMessage,
+          "Your login session was not found. Please log in first.",
+          "error"
+        );
+        profileName.textContent = "Not logged in";
+        profileEmail.textContent = "";
+        return;
+      }
+
+      try {
+        const response = await fetch(API_BASE + "/api/me", {
+          method: "GET",
+          headers: {
+            "Authorization": "Bearer " + token,
+            "Accept": "application/json"
+          }
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.user) {
+          throw new Error(data.message || "Could not load your profile.");
+        }
+
+        const user = data.user;
+        const name = user.fullName || user.full_name || "";
+
+        profileName.textContent = name || "User";
+        profileEmail.textContent = user.email || "";
+        fullNameInput.value = name;
+        emailInput.value = user.email || "";
+        phoneInput.value = user.phone || "";
+
+        currentBalance = Number(user.walletBalance ?? user.wallet_balance ?? 0);
+
+        if (!Number.isFinite(currentBalance)) {
+          currentBalance = 0;
+        }
+
+        avatar.textContent = name
+          ? name.trim().charAt(0).toUpperCase()
+          : "U";
+
+        renderBalance();
+        loadMessage.className = "message";
+        loadMessage.textContent = "";
+      } catch (error) {
+        showMessage(
+          loadMessage,
+          error.message || "Unable to load profile. Please try again.",
+          "error"
+        );
+      }
+    }
+
+    document.getElementById("profileForm").addEventListener(
+      "submit",
+      async function (event) {
+        event.preventDefault();
+
+        showMessage(
+          saveMessage,
+          "Profile editing is not enabled yet. The server must support a secure profile-update endpoint before changes can be saved.",
+          "error"
+        );
+      }
+    );
+
+    loadProfile();
+  </script>
+</body>
+</html>
