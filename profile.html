@@ -494,14 +494,84 @@ cancelButton.addEventListener("click", function () {
   saveMessage.className = "message";
 });
 
-profileForm.addEventListener("submit", function (event) {
+profileForm.addEventListener("submit", async function (event) {
   event.preventDefault();
 
-  showMessage(
-    saveMessage,
-    "Your changes are ready, but the secure server update is not connected yet.",
-    "error"
-  );
+  const token = getToken();
+  const newName = fullNameInput.value.trim();
+
+  if (!token) {
+    showMessage(
+      saveMessage,
+      "Your login session was not found. Please log in again.",
+      "error"
+    );
+    return;
+  }
+
+  if (newName.length < 2 || newName.length > 100) {
+    showMessage(
+      saveMessage,
+      "Please enter a valid full name.",
+      "error"
+    );
+    return;
+  }
+
+  saveButton.disabled = true;
+  saveButton.textContent = "Saving...";
+
+  try {
+    const response = await fetch(API_BASE + "/api/profile", {
+      method: "PUT",
+      headers: {
+        "Authorization": "Bearer " + token,
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      },
+      body: JSON.stringify({
+        fullName: newName
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.message || "Unable to update your profile."
+      );
+    }
+
+    const updatedUser = data.user || {};
+
+    fullNameInput.value = updatedUser.fullName || newName;
+    fullNameInput.dataset.original = updatedUser.fullName || newName;
+
+    profileName.textContent = updatedUser.fullName || newName;
+    avatar.textContent = (updatedUser.fullName || newName)
+      .trim()
+      .charAt(0)
+      .toUpperCase();
+
+    setEditMode(false);
+
+    showMessage(
+      saveMessage,
+      data.message || "Profile updated successfully.",
+      "success"
+    );
+
+  } catch (error) {
+    saveButton.disabled = false;
+
+    showMessage(
+      saveMessage,
+      error.message || "Unable to update your profile.",
+      "error"
+    );
+  } finally {
+    saveButton.textContent = "Save Changes";
+  }
 });
 
     loadProfile();
