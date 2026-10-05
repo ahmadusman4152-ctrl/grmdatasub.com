@@ -336,9 +336,7 @@
     let balanceVisible = true;
 
     function getToken() {
-      return localStorage.getItem("token") ||
-             sessionStorage.getItem("token") ||
-             "";
+  return localStorage.getItem("grm_auth_token") || "";
     }
 
     function showMessage(element, message, type) {
