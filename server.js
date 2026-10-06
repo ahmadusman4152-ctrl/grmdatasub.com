@@ -1091,10 +1091,8 @@ app.post("/api/data", async (req, res) => {
     }
 
     // Failed transaction: refund wallet
-    if (
-      requeryStatus === "failed" ||
-      responseCode !== "000"
-    ) {
+    if (requeryStatus === "failed")
+    {
       await pool.query(
         `
         UPDATE users
