@@ -750,6 +750,439 @@ app.get("/api/data-plans", async (req, res) => {
     });
   }
 });
+// Data purchase
+app.post("/api/data", async (req, res) => {
+  let client;
+  let walletDebited = false;
+  let amountNumber = 0;
+
+  try {
+    const auth = req.headers.authorization || "";
+
+    if (!auth.startsWith("Bearer ")) {
+      return res.status(401).json({
+        message: "Authentication required."
+      });
+    }
+
+    const token = auth.substring(7);
+
+    const tokenHash = crypto
+      .createHash("sha256")
+      .update(token)
+      .digest("hex");
+
+    const userResult = await pool.query(
+      `
+      SELECT u.id, u.email, u.wallet_balance
+      FROM sessions s
+      JOIN users u ON u.id = s.user_id
+      WHERE s.token_hash = $1
+      AND s.expires_at > NOW()
+      LIMIT 1
+      `,
+      [tokenHash]
+    );
+
+    if (userResult.rows.length === 0) {
+      return res.status(401).json({
+        message: "Session expired or invalid."
+      });
+    }
+
+    const user = userResult.rows[0];
+
+    const {
+      network,
+      phone,
+      variationCode
+    } = req.body;
+
+    const serviceMap = {
+      MTN: "mtn-data",
+      Airtel: "airtel-data",
+      Glo: "glo-data",
+      "9mobile": "etisalat-data"
+    };
+
+    const serviceID = serviceMap[network];
+
+    if (!serviceID) {
+      return res.status(400).json({
+        message: "Invalid network."
+      });
+    }
+
+    if (!/^\d{11}$/.test(String(phone || ""))) {
+      return res.status(400).json({
+        message: "Please enter a valid 11-digit phone number."
+      });
+    }
+
+    if (!variationCode) {
+      return res.status(400).json({
+        message: "Please select a data plan."
+      });
+    }
+
+    const vtpassBaseUrl =
+      process.env.VTPASS_BASE_URL ||
+      "https://sandbox.vtpass.com/api/";
+
+    const apiKey = process.env.VTPASS_API_KEY;
+    const secretKey = process.env.VTPASS_SECRET_KEY;
+
+    if (!apiKey || !secretKey) {
+      return res.status(500).json({
+        message: "VTpass API credentials are not configured."
+      });
+    }
+
+    // Get the official price of the selected variation
+    const variationsResponse = await fetch(
+      `${vtpassBaseUrl}service-variations?serviceID=${serviceID}`,
+      {
+        method: "GET",
+        headers: {
+          "api-key": apiKey,
+          "secret-key": secretKey
+        }
+      }
+    );
+
+    const variationsData = await variationsResponse.json();
+
+    if (
+      !variationsResponse.ok ||
+      String(variationsData.code) !== "000"
+    ) {
+      return res.status(400).json({
+        message:
+          variationsData.response_description ||
+          "Unable to verify data plan."
+      });
+    }
+
+    const variations =
+      variationsData.content?.variations || [];
+
+    const selectedPlan = variations.find(
+      (plan) =>
+        String(plan.variation_code) ===
+        String(variationCode)
+    );
+
+    if (!selectedPlan) {
+      return res.status(400).json({
+        message: "Selected data plan was not found."
+      });
+    }
+
+    amountNumber = Number(selectedPlan.variation_amount);
+
+    if (
+      !Number.isFinite(amountNumber) ||
+      amountNumber <= 0
+    ) {
+      return res.status(400).json({
+        message: "Invalid data plan price."
+      });
+    }
+
+    const requestId =
+      new Date()
+        .toLocaleString("en-GB", {
+          timeZone: "Africa/Lagos",
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false
+        })
+        .replace(/\D/g, "")
+        .slice(4) +
+      crypto.randomBytes(8).toString("hex");
+
+    client = await pool.connect();
+
+    await client.query("BEGIN");
+
+    const lockedUser = await client.query(
+      `
+      SELECT wallet_balance
+      FROM users
+      WHERE id = $1
+      FOR UPDATE
+      `,
+      [user.id]
+    );
+
+    if (lockedUser.rows.length === 0) {
+      await client.query("ROLLBACK");
+
+      return res.status(404).json({
+        message: "User account not found."
+      });
+    }
+
+    const walletBalance = Number(
+      lockedUser.rows[0].wallet_balance
+    );
+
+    if (walletBalance < amountNumber) {
+      await client.query("ROLLBACK");
+
+      return res.status(400).json({
+        message: "Insufficient wallet balance."
+      });
+    }
+
+    await client.query(
+      `
+      UPDATE users
+      SET wallet_balance = wallet_balance - $1,
+          updated_at = NOW()
+      WHERE id = $2
+      `,
+      [amountNumber, user.id]
+    );
+
+    await client.query(
+      `
+      INSERT INTO wallet_transactions
+      (
+        id,
+        user_id,
+        reference,
+        amount,
+        currency,
+        status
+      )
+      VALUES ($1, $2, $3, $4, $5, $6)
+      `,
+      [
+        crypto.randomUUID(),
+        user.id,
+        requestId,
+        amountNumber,
+        "NGN",
+        "pending"
+      ]
+    );
+
+    await client.query("COMMIT");
+
+    client.release();
+    client = null;
+
+    walletDebited = true;
+
+    // VTpass Data purchase
+    const vtpassResponse = await fetch(
+      `${vtpassBaseUrl}pay`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "api-key": apiKey,
+          "secret-key": secretKey
+        },
+        body: JSON.stringify({
+          request_id: requestId,
+          serviceID: serviceID,
+          billersCode: String(phone),
+          variation_code: String(variationCode),
+          amount: amountNumber,
+          phone: String(phone)
+        })
+      }
+    );
+
+    const vtpassData = await vtpassResponse.json();
+
+    console.log("[DATA] VTpass response", {
+      httpStatus: vtpassResponse.status,
+      code: vtpassData?.code,
+      description: vtpassData?.response_description,
+      transactionStatus:
+        vtpassData?.content?.transactions?.status
+    });
+
+    const responseCode =
+      String(vtpassData.code || "");
+
+    const transactionStatus =
+      String(
+        vtpassData?.content?.transactions?.status || ""
+      ).toLowerCase();
+
+    // Direct success
+    if (
+      responseCode === "000" &&
+      transactionStatus === "delivered"
+    ) {
+      const balanceResult = await pool.query(
+        `
+        SELECT wallet_balance
+        FROM users
+        WHERE id = $1
+        `,
+        [user.id]
+      );
+
+      await pool.query(
+        `
+        UPDATE wallet_transactions
+        SET status = $1
+        WHERE reference = $2
+        AND user_id = $3
+        `,
+        ["success", requestId, user.id]
+      );
+
+      return res.json({
+        message: "Data purchased successfully.",
+        status: "success",
+        reference: requestId,
+        amount: amountNumber,
+        walletBalance:
+          balanceResult.rows[0].wallet_balance
+      });
+    }
+
+    // Check VTpass transaction status
+    const requeryData =
+      await requeryVtpassTransaction(requestId);
+
+    const requeryStatus =
+      String(
+        requeryData?.content?.transactions?.status || ""
+      ).toLowerCase();
+
+    if (requeryStatus === "delivered") {
+      const balanceResult = await pool.query(
+        `
+        SELECT wallet_balance
+        FROM users
+        WHERE id = $1
+        `,
+        [user.id]
+      );
+
+      await pool.query(
+        `
+        UPDATE wallet_transactions
+        SET status = $1
+        WHERE reference = $2
+        AND user_id = $3
+        `,
+        ["success", requestId, user.id]
+      );
+
+      return res.json({
+        message: "Data purchased successfully.",
+        status: "success",
+        reference: requestId,
+        amount: amountNumber,
+        walletBalance:
+          balanceResult.rows[0].wallet_balance
+      });
+    }
+
+    // Failed transaction: refund wallet
+    if (
+      requeryStatus === "failed" ||
+      responseCode !== "000"
+    ) {
+      await pool.query(
+        `
+        UPDATE users
+        SET wallet_balance = wallet_balance + $1,
+            updated_at = NOW()
+        WHERE id = $2
+        `,
+        [amountNumber, user.id]
+      );
+
+      await pool.query(
+        `
+        UPDATE wallet_transactions
+        SET status = $1
+        WHERE reference = $2
+        AND user_id = $3
+        `,
+        ["failed", requestId, user.id]
+      );
+
+      return res.status(400).json({
+        message:
+          vtpassData.response_description ||
+          "Data purchase failed. Wallet refunded.",
+        status: "failed",
+        reference: requestId
+      });
+    }
+
+    // Pending: keep wallet transaction pending
+    await pool.query(
+      `
+      UPDATE wallet_transactions
+      SET status = $1
+      WHERE reference = $2
+      AND user_id = $3
+      `,
+      ["pending", requestId, user.id]
+    );
+
+    return res.status(202).json({
+      message:
+        "Data transaction is still processing.",
+      status: "pending",
+      reference: requestId
+    });
+
+  } catch (error) {
+    console.error("Data purchase error:", error);
+
+    if (client) {
+      try {
+        await client.query("ROLLBACK");
+        client.release();
+      } catch (rollbackError) {
+        console.error(
+          "Rollback error:",
+          rollbackError
+        );
+      }
+    }
+
+    // Refund only when the wallet was already debited
+    if (walletDebited) {
+      try {
+        await pool.query(
+          `
+          UPDATE users
+          SET wallet_balance = wallet_balance + $1,
+              updated_at = NOW()
+          WHERE id = $2
+          `,
+          [amountNumber, user.id]
+        );
+      } catch (refundError) {
+        console.error(
+          "Wallet refund error:",
+          refundError
+        );
+      }
+    }
+
+    return res.status(500).json({
+      message:
+        "Unable to process data purchase."
+    });
+  }
+});
 // Airtime purchase
 app.post("/api/airtime", async (req, res) => {
 console.log("[AIRTIME] Request received");
