@@ -3,56 +3,65 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Buy Data - G R M DATA SUB</title>
-  <link rel="stylesheet" href="style.css">
+
+  <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
 
 <main>
   <section class="hero">
+
     <h1>G R M DATA SUB</h1>
     <p>Buy Data</p>
 
-    <form>
+    <form id="dataForm">
 
-      <label>Network</label>
+      <label for="network">Network</label>
       <br>
-      <select required>
+
+      <select id="network" required>
         <option value="">Select Network</option>
-        <option>MTN</option>
-        <option>Airtel</option>
-        <option>Glo</option>
-        <option>9mobile</option>
+        <option value="MTN">MTN</option>
+        <option value="Airtel">Airtel</option>
+        <option value="Glo">Glo</option>
+        <option value="9mobile">9mobile</option>
       </select>
 
       <br><br>
 
-      <label>Data Plan</label>
+      <label for="dataPlan">Data Plan</label>
       <br>
-      <select required>
-        <option value="">Select Data Plan</option>
-        <option>500MB - ₦150</option>
-        <option>1GB - ₦300</option>
-        <option>2GB - ₦600</option>
-        <option>3GB - ₦900</option>
-        <option>5GB - ₦1,500</option>
-        <option>10GB - ₦3,000</option>
+
+      <select id="dataPlan" required disabled>
+        <option value="">Select Network First</option>
       </select>
 
       <br><br>
 
-      <label>Phone Number</label>
+      <label for="phone">Phone Number</label>
       <br>
-      <input type="tel" placeholder="Enter phone number" required>
+
+      <input
+        id="phone"
+        type="tel"
+        inputmode="numeric"
+        maxlength="11"
+        placeholder="Enter phone number"
+        required
+      >
 
       <br><br>
 
-      <button type="button">Buy Data</button>
+      <button id="buyDataButton" type="submit">
+        Buy Data
+      </button>
 
     </form>
 
-    <br>
+    <p id="message"></p>
 
     <p>
       <a href="dashboard.html">Back to Dashboard</a>
@@ -60,6 +69,225 @@
 
   </section>
 </main>
+
+<script>
+const API_URL = "https://api.grmdatasub.com";
+
+const token = localStorage.getItem("grm_auth_token");
+
+const dataForm = document.getElementById("dataForm");
+const networkSelect = document.getElementById("network");
+const dataPlanSelect = document.getElementById("dataPlan");
+const phoneInput = document.getElementById("phone");
+const buyDataButton = document.getElementById("buyDataButton");
+const message = document.getElementById("message");
+
+
+// Check login
+if (!token) {
+  window.location.href = "login.html";
+}
+
+
+// Show message
+function showMessage(text) {
+  message.textContent = text;
+}
+
+
+// Load data plans
+async function loadDataPlans(network) {
+
+  dataPlanSelect.innerHTML =
+    '<option value="">Loading data plans...</option>';
+
+  dataPlanSelect.disabled = true;
+
+  showMessage("");
+
+  try {
+
+    const response = await fetch(
+      `${API_URL}/api/data-plans?network=${encodeURIComponent(network)}`
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.message || "Unable to load data plans."
+      );
+    }
+
+    const plans = data.plans || [];
+
+    if (plans.length === 0) {
+      dataPlanSelect.innerHTML =
+        '<option value="">No data plans available</option>';
+
+      return;
+    }
+
+    dataPlanSelect.innerHTML =
+      '<option value="">Select Data Plan</option>';
+
+    plans.forEach((plan) => {
+
+      const option = document.createElement("option");
+
+      const variationCode =
+        plan.variation_code || "";
+
+      const variationName =
+        plan.variation_name ||
+        variationCode;
+
+      const variationAmount =
+        plan.variation_amount || "";
+
+      option.value = variationCode;
+
+      option.textContent =
+        `${variationName} - ₦${variationAmount}`;
+
+      dataPlanSelect.appendChild(option);
+    });
+
+    dataPlanSelect.disabled = false;
+
+  } catch (error) {
+
+    console.error("Data plans error:", error);
+
+    dataPlanSelect.innerHTML =
+      '<option value="">Unable to load data plans</option>';
+
+    showMessage(
+      error.message || "Unable to load data plans."
+    );
+  }
+}
+
+
+// Network changed
+networkSelect.addEventListener("change", () => {
+
+  const network = networkSelect.value;
+
+  if (!network) {
+
+    dataPlanSelect.innerHTML =
+      '<option value="">Select Network First</option>';
+
+    dataPlanSelect.disabled = true;
+
+    showMessage("");
+
+    return;
+  }
+
+  loadDataPlans(network);
+});
+
+
+// Buy Data
+dataForm.addEventListener("submit", async (event) => {
+
+  event.preventDefault();
+
+  const network = networkSelect.value;
+  const variationCode = dataPlanSelect.value;
+  const phone = phoneInput.value.trim();
+
+  if (!network) {
+    showMessage("Please select a network.");
+    return;
+  }
+
+  if (!variationCode) {
+    showMessage("Please select a data plan.");
+    return;
+  }
+
+  if (!/^\d{11}$/.test(phone)) {
+    showMessage(
+      "Please enter a valid 11-digit phone number."
+    );
+    return;
+  }
+
+  buyDataButton.disabled = true;
+  buyDataButton.textContent = "Processing...";
+
+  showMessage("Processing your data purchase...");
+
+  try {
+
+    const response = await fetch(
+      `${API_URL}/api/data`,
+      {
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+
+        body: JSON.stringify({
+          network,
+          phone,
+          variationCode
+        })
+      }
+    );
+
+    const data = await response.json();
+
+    if (response.ok && data.status === "success") {
+
+      showMessage(
+        `Data purchased successfully. Reference: ${data.reference}`
+      );
+
+      dataForm.reset();
+
+      dataPlanSelect.innerHTML =
+        '<option value="">Select Network First</option>';
+
+      dataPlanSelect.disabled = true;
+
+      return;
+    }
+
+    if (data.status === "pending") {
+
+      showMessage(
+        `Your data transaction is still processing. Reference: ${data.reference}`
+      );
+
+      return;
+    }
+
+    showMessage(
+      data.message ||
+      "Data purchase failed."
+    );
+
+  } catch (error) {
+
+    console.error("Data purchase error:", error);
+
+    showMessage(
+      "Unable to process data purchase. Please try again."
+    );
+
+  } finally {
+
+    buyDataButton.disabled = false;
+    buyDataButton.textContent = "Buy Data";
+  }
+});
+</script>
 
 </body>
 </html>
