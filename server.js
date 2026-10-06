@@ -759,6 +759,12 @@ if (
 });
 // Data purchase
 app.post("/api/data", async (req, res) => {
+    console.log("[DATA DEBUG] /api/data request received", {
+    network: req.body?.network,
+    phone: req.body?.phone,
+    variationCode: req.body?.variationCode,
+    hasAuth: Boolean(req.headers.authorization)
+  });
   let client;
   let walletDebited = false;
   let amountNumber = 0;
