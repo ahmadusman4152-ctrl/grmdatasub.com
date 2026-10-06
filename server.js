@@ -680,6 +680,76 @@ async function requeryVtpassTransaction(requestId) {
 
   return await response.json();
 }
+// Data plans from VTpass Sandbox
+app.get("/api/data-plans", async (req, res) => {
+  try {
+    const network = String(req.query.network || "").trim();
+
+    const serviceMap = {
+      MTN: "mtn-data",
+      Airtel: "airtel-data",
+      Glo: "glo-data",
+      "9mobile": "etisalat-data"
+    };
+
+    const serviceID = serviceMap[network];
+
+    if (!serviceID) {
+      return res.status(400).json({
+        message: "Invalid network."
+      });
+    }
+
+    const vtpassBaseUrl =
+      process.env.VTPASS_BASE_URL ||
+      "https://sandbox.vtpass.com/api/";
+
+    const apiKey = process.env.VTPASS_API_KEY;
+    const secretKey = process.env.VTPASS_SECRET_KEY;
+
+    if (!apiKey || !secretKey) {
+      return res.status(500).json({
+        message: "VTpass API credentials are not configured."
+      });
+    }
+
+    const response = await fetch(
+      `${vtpassBaseUrl}service-variations?serviceID=${serviceID}`,
+      {
+        method: "GET",
+        headers: {
+          "api-key": apiKey,
+          "secret-key": secretKey
+        }
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok || String(data.code) !== "000") {
+      return res.status(400).json({
+        message:
+          data.response_description ||
+          "Unable to load data plans."
+      });
+    }
+
+    const plans = data.content?.variations || [];
+
+    res.json({
+      network,
+      serviceID,
+      plans
+    });
+
+  } catch (error) {
+    console.error("Data plans error:", error);
+
+    res.status(500).json({
+      message: "Unable to load data plans."
+    });
+  }
+});
 // Airtime purchase
 app.post("/api/airtime", async (req, res) => {
 console.log("[AIRTIME] Request received");
