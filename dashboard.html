@@ -266,6 +266,570 @@ body {
   .service-card {
     min-height: 85px;
     font-size: 15px;
+    /* =========================================================
+   GRM DATA SUB — REFERENCE DASHBOARD DESIGN
+   VISUAL OVERRIDE ONLY
+   ========================================================= */
+
+html,
+body {
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100% !important;
+  min-height: 100% !important;
+  background: #ffffff !important;
+  font-family: Arial, sans-serif !important;
+  color: #071a4d !important;
+}
+
+.app-dashboard {
+  width: 100% !important;
+  max-width: 600px !important;
+  margin: 0 auto !important;
+  padding: 0 !important;
+  overflow-x: hidden !important;
+  background: #ffffff !important;
+}
+
+/* =========================
+   BLUE HEADER
+   ========================= */
+
+.top-header {
+  position: relative !important;
+  width: 100% !important;
+  height: 310px !important;
+  box-sizing: border-box !important;
+  padding: 30px 26px 28px !important;
+
+  background: linear-gradient(
+    180deg,
+    #0878f9 0%,
+    #086cf0 55%,
+    #0757d9 100%
+  ) !important;
+
+  color: #ffffff !important;
+  border-radius: 0 0 48% 48% / 0 0 16% 16% !important;
+  overflow: hidden !important;
+  box-shadow: 0 8px 25px rgba(21, 94, 239, 0.25) !important;
+}
+
+/* curved lower wave */
+.top-header::after {
+  content: "";
+  position: absolute;
+  left: -10%;
+  bottom: -54px;
+  width: 120%;
+  height: 105px;
+  background: #ffffff;
+  border-radius: 50% 50% 0 0 / 55% 55% 0 0;
+  z-index: 1;
+}
+
+/* =========================
+   TOP ROW
+   ========================= */
+
+.top-header > div:first-child {
+  position: relative !important;
+  z-index: 5 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 10px !important;
+  width: 100% !important;
+  margin: 0 !important;
+}
+
+/* settings + notification group */
+.top-header > div:first-child > div:first-child {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+}
+
+/* all top buttons */
+.top-header button,
+.top-header a[aria-label="Settings"],
+.top-header a[aria-label="Profile"] {
+  box-sizing: border-box !important;
+  width: 74px !important;
+  height: 74px !important;
+  border-radius: 18px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-decoration: none !important;
+  color: #ffffff !important;
+  background: rgba(255,255,255,0.12) !important;
+  border: 2px solid rgba(255,255,255,0.22) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.12) !important;
+}
+
+/* top icon size */
+.top-header button,
+.top-header a {
+  font-size: 30px !important;
+}
+
+/* =========================
+   BRAND
+   ========================= */
+
+.top-header > div:first-child > div:nth-child(2) {
+  position: absolute !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  top: 42px !important;
+  width: 210px !important;
+  text-align: center !important;
+  margin: 0 !important;
+}
+
+/* hide username from header */
+#userName {
+  display: none !important;
+}
+
+/* brand text */
+.top-header > div:first-child > div:nth-child(2) > div:first-child {
+  font-size: 0 !important;
+  height: 45px !important;
+  margin: 0 !important;
+}
+
+.top-header > div:first-child > div:nth-child(2) > div:first-child::before {
+  content: "▮▮▮" !important;
+  display: block !important;
+  color: #ffffff !important;
+  font-size: 30px !important;
+  letter-spacing: 3px !important;
+  line-height: 35px !important;
+}
+
+/* GRM DATA SUB */
+.top-header > div:first-child > div:nth-child(2) > div:nth-child(2) {
+  font-size: 28px !important;
+  font-weight: 800 !important;
+  letter-spacing: 2px !important;
+  white-space: nowrap !important;
+  color: #ffffff !important;
+}
+
+/* =========================
+   BALANCE + COMMISSION
+   ========================= */
+
+.top-header > div:nth-child(2) {
+  position: relative !important;
+  z-index: 5 !important;
+  display: grid !important;
+  grid-template-columns: 1.55fr 0.9fr !important;
+  gap: 18px !important;
+  margin-top: 42px !important;
+  width: 100% !important;
+}
+
+/* wallet */
+.top-header > div:nth-child(2) > div:first-child {
+  box-sizing: border-box !important;
+  min-height: 126px !important;
+  padding: 18px 20px !important;
+  border-radius: 22px !important;
+  background: rgba(255,255,255,0.12) !important;
+  border: 2px solid rgba(255,255,255,0.18) !important;
+  color: #ffffff !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+}
+
+/* wallet title */
+.top-header > div:nth-child(2) > div:first-child > div:first-child {
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  margin-bottom: 8px !important;
+}
+
+/* wallet row */
+.top-header > div:nth-child(2) > div:first-child > div:nth-child(2) {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 10px !important;
+}
+
+/* wallet amount */
+#walletBalance {
+  font-size: 38px !important;
+  font-weight: 800 !important;
+  color: #ffffff !important;
+  white-space: nowrap !important;
+}
+
+/* eye */
+#balanceToggle {
+  width: 46px !important;
+  height: 46px !important;
+  padding: 0 !important;
+  border-radius: 50% !important;
+  background: transparent !important;
+  border: none !important;
+  color: #ffffff !important;
+  font-size: 23px !important;
+}
+
+/* commission */
+.top-header > div:nth-child(2) > div:nth-child(2) {
+  box-sizing: border-box !important;
+  min-height: 126px !important;
+  padding: 18px 15px !important;
+  border-radius: 22px !important;
+  background: rgba(255,255,255,0.12) !important;
+  border: 2px solid rgba(255,255,255,0.18) !important;
+  color: #ffffff !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  align-items: center !important;
+  text-align: center !important;
+}
+
+.top-header > div:nth-child(2) > div:nth-child(2) > div:first-child {
+  font-size: 15px !important;
+  margin-bottom: 6px !important;
+}
+
+.top-header > div:nth-child(2) > div:nth-child(2) > div:nth-child(2) {
+  font-size: 23px !important;
+  font-weight: 800 !important;
+  white-space: nowrap !important;
+}
+
+/* =========================
+   SERVICES SECTION
+   ========================= */
+
+.services-section {
+  width: 100% !important;
+  box-sizing: border-box !important;
+  padding: 22px 16px 115px !important;
+  background: #ffffff !important;
+  text-align: center !important;
+}
+
+/* heading */
+.services-section h2 {
+  margin: 0 0 12px !important;
+  color: #071a4d !important;
+  font-size: 27px !important;
+  line-height: 1.15 !important;
+  font-weight: 800 !important;
+}
+
+/* blue underline */
+.services-section > div:nth-child(2) {
+  width: 52px !important;
+  height: 5px !important;
+  background: #1268f3 !important;
+  border-radius: 10px !important;
+  margin: 0 auto 20px !important;
+}
+
+/* service grid */
+.services-section > div:last-child {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 12px !important;
+  width: 100% !important;
+}
+
+/* every service */
+.service-card,
+.services-section a[href],
+.services-section button.service-card {
+  box-sizing: border-box !important;
+  width: 100% !important;
+  min-height: 105px !important;
+  height: 105px !important;
+  padding: 12px 12px !important;
+  margin: 0 !important;
+  border-radius: 18px !important;
+  border: none !important;
+  text-decoration: none !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  text-align: left !important;
+  color: #071a4d !important;
+  font-family: Arial, sans-serif !important;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  overflow: hidden !important;
+}
+
+/* service icon */
+.service-card > div:first-child,
+.services-section a[href] > div:first-child {
+  flex: 0 0 48px !important;
+  width: 48px !important;
+  height: 48px !important;
+  border-radius: 14px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 27px !important;
+}
+
+/* service text */
+.service-card > div:nth-child(2),
+.services-section a[href] > div:nth-child(2) {
+  min-width: 0 !important;
+  flex: 1 !important;
+}
+
+/* title */
+.service-card > div:nth-child(2) > div:first-child,
+.services-section a[href] > div:nth-child(2) > div:first-child {
+  font-size: 18px !important;
+  font-weight: 800 !important;
+  line-height: 1.1 !important;
+  color: #071a4d !important;
+}
+
+/* subtitle */
+.service-card > div:nth-child(2) > div:nth-child(2),
+.services-section a[href] > div:nth-child(2) > div:nth-child(2) {
+  margin-top: 5px !important;
+  font-size: 13px !important;
+  font-weight: 400 !important;
+  color: #60708f !important;
+  line-height: 1.15 !important;
+}
+
+/* arrows */
+.service-card > div:last-child,
+.services-section a[href] > div:last-child {
+  margin-left: auto !important;
+  font-size: 28px !important;
+  color: #1268f3 !important;
+  flex: 0 0 auto !important;
+}
+
+/* Add Money */
+.services-section a[href="fundwallet.html"] {
+  background: linear-gradient(135deg, #08b85a, #18a957) !important;
+  color: #ffffff !important;
+}
+
+.services-section a[href="fundwallet.html"] * {
+  color: #ffffff !important;
+}
+
+/* Withdraw */
+.services-section button.service-card:nth-child(2) {
+  background: linear-gradient(135deg, #ffbd00, #ffae00) !important;
+}
+
+.services-section button.service-card:nth-child(2) * {
+  color: #071a4d !important;
+}
+
+/* normal cards */
+.services-section a[href]:not([href="fundwallet.html"]),
+.services-section button.service-card:not(:nth-child(2)) {
+  background: #eef6ff !important;
+}
+
+/* =========================
+   BOTTOM NAVIGATION
+   ========================= */
+
+.bottom-nav {
+  position: fixed !important;
+  z-index: 1000 !important;
+  left: 50% !important;
+  bottom: 0 !important;
+  transform: translateX(-50%) !important;
+  width: min(600px, 100%) !important;
+  height: 92px !important;
+  box-sizing: border-box !important;
+  display: grid !important;
+  grid-template-columns: 1fr 1fr 1fr 1fr !important;
+  gap: 0 !important;
+  padding: 8px 14px !important;
+  background: #ffffff !important;
+  border-radius: 24px 24px 0 0 !important;
+  box-shadow: 0 -5px 25px rgba(0,0,0,0.10) !important;
+  align-items: center !important;
+}
+
+/* hide old Profile + Settings */
+.bottom-nav > .bottom-item:nth-child(4),
+.bottom-nav > .bottom-item:nth-child(5) {
+  display: none !important;
+}
+
+/* Home + History */
+.bottom-nav > .bottom-item {
+  height: 76px !important;
+  padding: 4px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-decoration: none !important;
+  color: #26364f !important;
+  background: transparent !important;
+  border: none !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+}
+
+/* plus button */
+.bottom-nav .plus-button {
+  width: 76px !important;
+  height: 76px !important;
+  justify-self: center !important;
+  border-radius: 22px !important;
+  background: #0878f9 !important;
+  color: #ffffff !important;
+  font-size: 48px !important;
+  font-weight: 300 !important;
+  box-shadow: 0 5px 15px rgba(8,120,249,0.25) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* old separate logout */
+#logoutButton {
+  position: fixed !important;
+  z-index: 1001 !important;
+  right: max(22px, calc((100vw - 600px) / 2 + 22px)) !important;
+  bottom: 12px !important;
+  width: 100px !important;
+  height: 76px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  background: transparent !important;
+  color: #e21b23 !important;
+  box-shadow: none !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+}
+
+/* logout icon/text arrangement */
+#logoutButton::before {
+  content: "⇥" !important;
+  display: block !important;
+  font-size: 35px !important;
+  line-height: 35px !important;
+  font-weight: 700 !important;
+  margin-bottom: 3px !important;
+}
+
+/* hide old logout emoji */
+#logoutButton {
+  font-size: 0 !important;
+}
+
+#logoutButton::after {
+  content: "Logout" !important;
+  display: block !important;
+  font-size: 15px !important;
+  color: #071a4d !important;
+  font-weight: 700 !important;
+}
+
+/* =========================
+   SMALL PHONES
+   ========================= */
+
+@media (max-width: 400px) {
+
+  .top-header {
+    height: 300px !important;
+    padding-left: 18px !important;
+    padding-right: 18px !important;
+  }
+
+  .top-header button,
+  .top-header a[aria-label="Settings"],
+  .top-header a[aria-label="Profile"] {
+    width: 62px !important;
+    height: 62px !important;
+  }
+
+  .top-header > div:first-child > div:nth-child(2) {
+    top: 36px !important;
+  }
+
+  .top-header > div:first-child > div:nth-child(2) > div:nth-child(2) {
+    font-size: 22px !important;
+  }
+
+  #walletBalance {
+    font-size: 32px !important;
+  }
+
+  .top-header > div:nth-child(2) {
+    gap: 12px !important;
+    margin-top: 38px !important;
+  }
+
+  .services-section {
+    padding-left: 14px !important;
+    padding-right: 14px !important;
+  }
+
+  .services-section h2 {
+    font-size: 24px !important;
+  }
+
+  .service-card,
+  .services-section a[href],
+  .services-section button.service-card {
+    min-height: 102px !important;
+    height: 102px !important;
+    padding: 10px 9px !important;
+    gap: 9px !important;
+  }
+
+  .service-card > div:first-child,
+  .services-section a[href] > div:first-child {
+    flex-basis: 44px !important;
+    width: 44px !important;
+    height: 44px !important;
+  }
+
+  .service-card > div:nth-child(2) > div:first-child,
+  .services-section a[href] > div:nth-child(2) > div:first-child {
+    font-size: 16px !important;
+  }
+
+  .service-card > div:nth-child(2) > div:nth-child(2),
+  .services-section a[href] > div:nth-child(2) > div:nth-child(2) {
+    font-size: 12px !important;
+  }
+
+  .bottom-nav {
+    height: 86px !important;
+  }
+
+  .bottom-nav .plus-button {
+    width: 68px !important;
+    height: 68px !important;
+  }
+
+  #logoutButton {
+    height: 70px !important;
+    bottom: 8px !important;
+  }
+    }
   </style>
 </head>
 
