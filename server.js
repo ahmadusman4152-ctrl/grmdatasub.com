@@ -725,18 +725,25 @@ app.get("/api/data-plans", async (req, res) => {
     );
 
     const data = await response.json();
+    
+    if (!response.ok) {
+  return res.status(400).json({
+    message:
+      data.response_description ||
+      "Unable to load data plans."
+  });
+}
 
-    if (!response.ok || String(data.code) !== "000") {
-      return res.status(400).json({
-        message:
-          data.response_description ||
-          "Unable to load data plans."
-      });
-    }
-
+if (
+  !data.content ||
+  !Array.isArray(data.content.variations)
+) {
+  return res.status(400).json({
+    message: "No data plans were returned by VTpass."
+  });
+}
     const plans = data.content?.variations || [];
-
-    res.json({
+      res.json({
       network,
       serviceID,
       plans
