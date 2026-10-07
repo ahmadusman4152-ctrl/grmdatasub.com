@@ -991,8 +991,9 @@ body {
 
   /* MOBILE HEADER OVERRIDE */
 
+/* MOBILE HEADER — FINAL LAYOUT */
 .top-header {
-    height: 300px !important;
+    height: 430px !important;
     padding-left: 18px !important;
     padding-right: 18px !important;
 }
@@ -1000,14 +1001,18 @@ body {
 /* TOP ICONS */
 .top-header > div:first-child {
     width: 100% !important;
+    position: relative !important;
+    z-index: 30 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
 }
 
-.top-header > div:first-child a,
-.top-header > div:first-child button {
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    color: #ffffff !important;
+/* SETTINGS + BELL */
+.top-header > div:first-child > div:first-child {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
 }
 
 /* PROFILE */
@@ -1022,38 +1027,69 @@ body {
     left: auto !important;
     transform: none !important;
     width: 100% !important;
-    margin-top: 6px !important;
+    margin: 8px 0 0 0 !important;
+    padding: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
     text-align: center !important;
+    z-index: 30 !important;
 }
 
+/* G R M */
 .top-header > div:nth-child(2) > div:first-child {
     font-size: 26px !important;
-    line-height: 28px !important;
+    line-height: 30px !important;
+    margin: 0 !important;
 }
 
+/* DATA SUB */
 .top-header > div:nth-child(2) > div:nth-child(2) {
     font-size: 26px !important;
     line-height: 30px !important;
+    margin: 0 !important;
 }
 
+/* USERNAME */
 .top-header > div:nth-child(2) #userName {
     display: block !important;
     visibility: visible !important;
     opacity: 1 !important;
-    font-size: 17px !important;
-    margin-top: 6px !important;
+    font-size: 16px !important;
+    line-height: 20px !important;
+    margin: 5px 0 0 0 !important;
 }
 
 /* WALLET + COMMISSION */
 .top-header > div:nth-child(3) {
+    position: relative !important;
+    z-index: 30 !important;
     width: 100% !important;
     display: grid !important;
     grid-template-columns: 1fr 1fr !important;
     gap: 10px !important;
-    margin-top: 18px !important;
+    margin-top: 12px !important;
 }
 
+/* WALLET + COMMISSION CARDS */
+.top-header > div:nth-child(3) > div {
+    min-height: 100px !important;
+    height: 100px !important;
+    padding: 12px !important;
+    box-sizing: border-box !important;
+}
+
+/* WALLET BALANCE */
 #walletBalance {
+    visibility: visible !important;
+    opacity: 1 !important;
+    font-size: 24px !important;
+    line-height: 28px !important;
+}
+
+/* EYE BUTTON */
+#balanceToggle {
     visibility: visible !important;
     opacity: 1 !important;
 }
