@@ -397,32 +397,24 @@ body {
     justify-content: center !important;
 }
     /* ==========================================
-   FINAL TOP HEADER ALIGNMENT & ICON COLORS
+   FINAL HEADER ALIGNMENT - CORRECTED
    ========================================== */
 
-/* Put GRM DATA SUB together and center it */
+/* Header top row */
 .top-header > div:first-child {
     position: relative !important;
 }
 
-.top-header > div:first-child > :nth-child(3) {
-    position: absolute !important;
-    left: 50% !important;
-    transform: translateX(-50%) !important;
-    text-align: center !important;
-    white-space: nowrap !important;
+/* Settings + Bell group */
+.top-header > div:first-child > div:first-child {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
 }
 
-/* Settings - white and clean */
-.top-header > div:first-child > :nth-child(1) {
-    color: #ffffff !important;
-    border: none !important;
-    box-shadow: none !important;
-    background: transparent !important;
-}
-
-/* Notification bell - white and clean */
-.top-header > div:first-child > :nth-child(2) {
+/* Settings and Bell - remove boxes and make white */
+.top-header > div:first-child > div:first-child button,
+.top-header > div:first-child > div:first-child button * {
     color: #ffffff !important;
     border: none !important;
     box-shadow: none !important;
@@ -430,10 +422,55 @@ body {
     filter: grayscale(1) brightness(0) invert(1) !important;
 }
 
-/* Profile - move slightly right and make it white */
-.top-header > div:first-child > :nth-child(4) {
+/* GRM DATA SUB - center and keep together */
+.top-header > div:first-child > div:nth-child(2) {
+    position: absolute !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: auto !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    white-space: nowrap !important;
+    text-align: center !important;
+}
+
+/* GRM part */
+.top-header > div:first-child > div:nth-child(2) > div:first-child {
+    height: auto !important;
+    font-size: 0 !important;
+    margin: 0 !important;
+}
+
+/* GRM text */
+.top-header > div:first-child > div:nth-child(2) > div:first-child::before {
+    color: #ffffff !important;
+    font-size: 28px !important;
+    letter-spacing: 2px !important;
+    line-height: 1 !important;
+}
+
+/* DATA SUB part */
+.top-header > div:first-child > div:nth-child(2) > div:nth-child(2) {
+    color: #ffffff !important;
+    font-size: 28px !important;
+    font-weight: 700 !important;
+    letter-spacing: 1px !important;
+    white-space: nowrap !important;
+}
+
+/* Profile - third item, not fourth */
+.top-header > div:first-child > div:nth-child(3) {
     position: absolute !important;
     right: 8px !important;
+    color: #ffffff !important;
+}
+
+/* Profile button */
+.top-header > div:first-child > div:nth-child(3) button,
+.top-header > div:first-child > div:nth-child(3) button * {
     color: #ffffff !important;
     border: none !important;
     box-shadow: none !important;
