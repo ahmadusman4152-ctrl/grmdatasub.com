@@ -982,35 +982,74 @@ body {
 
 @media (max-width: 400px) {
 
-  .top-header {
+  /* MOBILE HEADER OVERRIDE */
+
+.top-header {
     height: 300px !important;
     padding-left: 18px !important;
     padding-right: 18px !important;
-  }
+}
 
-  .top-header button,
-  .top-header a[aria-label="Settings"],
-  .top-header a[aria-label="Profile"] {
-    width: 62px !important;
-    height: 62px !important;
-  }
+/* TOP ICONS */
+.top-header > div:first-child {
+    width: 100% !important;
+}
 
-  .top-header > div:first-child > div:nth-child(2) {
-    top: 36px !important;
-  }
+.top-header > div:first-child a,
+.top-header > div:first-child button {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    color: #ffffff !important;
+}
 
-  .top-header > div:first-child > div:nth-child(2) > div:nth-child(2) {
-    font-size: 22px !important;
-  }
+/* PROFILE */
+.top-header > div:first-child > a:last-child {
+    margin-left: auto !important;
+}
 
-  #walletBalance {
-    font-size: 32px !important;
-  }
+/* BRAND + USERNAME */
+.top-header > div:nth-child(2) {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    transform: none !important;
+    width: 100% !important;
+    margin-top: 6px !important;
+    text-align: center !important;
+}
 
-  .top-header > div:nth-child(2) {
-    gap: 12px !important;
-    margin-top: 38px !important;
-  }
+.top-header > div:nth-child(2) > div:first-child {
+    font-size: 26px !important;
+    line-height: 28px !important;
+}
+
+.top-header > div:nth-child(2) > div:nth-child(2) {
+    font-size: 26px !important;
+    line-height: 30px !important;
+}
+
+.top-header > div:nth-child(2) #userName {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    font-size: 17px !important;
+    margin-top: 6px !important;
+}
+
+/* WALLET + COMMISSION */
+.top-header > div:nth-child(3) {
+    width: 100% !important;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10px !important;
+    margin-top: 18px !important;
+}
+
+#walletBalance {
+    visibility: visible !important;
+    opacity: 1 !important;
+}
 
   .services-section {
     padding-left: 14px !important;
