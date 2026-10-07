@@ -718,97 +718,96 @@ body {
 }
 
 /* =========================================================
-   BRAND + USERNAME
+   HEADER CONTENT — FINAL POSITION
+   BLUE CURVE IS NOT TOUCHED
    ========================================================= */
 
+/* BRAND + USERNAME */
 .top-header > div:nth-child(2) {
     position: relative !important;
-    z-index: 25 !important;
-
+    z-index: 100 !important;
     width: 100% !important;
     margin: 8px 0 0 0 !important;
     padding: 0 !important;
-
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
     justify-content: center !important;
-
+    text-align: center !important;
     background: transparent !important;
     border: none !important;
     box-shadow: none !important;
-
-    text-align: center !important;
-}
-
-/* G R M DATA SUB */
-.top-header > div:nth-child(2) > div:first-child,
-.top-header > div:nth-child(2) > div:nth-child(2) {
-    color: #ffffff !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    line-height: 1.05 !important;
-    white-space: nowrap !important;
 }
 
 /* G R M */
 .top-header > div:nth-child(2) > div:first-child {
+    position: relative !important;
+    z-index: 101 !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    color: #ffffff !important;
     font-size: 28px !important;
     font-weight: 500 !important;
+    line-height: 30px !important;
     letter-spacing: 3px !important;
+    margin: 0 !important;
+    padding: 0 !important;
 }
 
 /* DATA SUB */
 .top-header > div:nth-child(2) > div:nth-child(2) {
+    position: relative !important;
+    z-index: 101 !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    color: #ffffff !important;
     font-size: 28px !important;
     font-weight: 800 !important;
+    line-height: 32px !important;
     letter-spacing: 1px !important;
+    white-space: nowrap !important;
+    margin: 0 !important;
+    padding: 0 !important;
 }
 
 /* USERNAME */
 .top-header > div:nth-child(2) #userName {
+    position: relative !important;
+    z-index: 101 !important;
     display: block !important;
     visibility: visible !important;
     opacity: 1 !important;
-
-    margin: 7px 0 0 0 !important;
-    padding: 0 !important;
-
     color: #ffffff !important;
     font-size: 18px !important;
     font-weight: 600 !important;
-
-    line-height: 1.2 !important;
+    line-height: 22px !important;
+    margin: 7px 0 0 0 !important;
+    padding: 0 !important;
     text-align: center !important;
     white-space: nowrap !important;
 }
 
-/* =========================================================
-   WALLET + COMMISSION
-   ========================================================= */
-
+/* WALLET + COMMISSION */
 .top-header > div:nth-child(3) {
     position: relative !important;
-    z-index: 20 !important;
-
+    z-index: 100 !important;
     width: 100% !important;
     margin: 22px 0 0 0 !important;
     padding: 0 !important;
-
     display: grid !important;
     grid-template-columns: 1fr 1fr !important;
     gap: 14px !important;
-
     background: transparent !important;
     border: none !important;
     box-shadow: none !important;
 }
 
-/* KEEP WALLET AND COMMISSION CONTENT VISIBLE */
+/* WALLET CARD + COMMISSION CARD */
 .top-header > div:nth-child(3) > div {
     position: relative !important;
-    z-index: 21 !important;
-    display: block !important;
+    z-index: 101 !important;
     visibility: visible !important;
     opacity: 1 !important;
 }
@@ -816,7 +815,15 @@ body {
 /* WALLET BALANCE */
 #walletBalance {
     position: relative !important;
-    z-index: 22 !important;
+    z-index: 102 !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* EYE BUTTON */
+#balanceToggle {
+    position: relative !important;
+    z-index: 102 !important;
     visibility: visible !important;
     opacity: 1 !important;
 }
