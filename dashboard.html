@@ -1020,7 +1020,7 @@ body {
     margin-left: auto !important;
 }
 
-/* BRAND + USERNAME */
+/* BRAND + USERNAME — ONE LINE */
 .top-header > div:nth-child(2) {
     position: relative !important;
     top: auto !important;
@@ -1030,35 +1030,40 @@ body {
     margin: 8px 0 0 0 !important;
     padding: 0 !important;
     display: flex !important;
-    flex-direction: column !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
     align-items: center !important;
     justify-content: center !important;
     text-align: center !important;
     z-index: 30 !important;
+    gap: 6px !important;
 }
 
-/* G R M */
-.top-header > div:nth-child(2) > div:first-child {
-    font-size: 26px !important;
-    line-height: 30px !important;
-    margin: 0 !important;
-}
-
-/* DATA SUB */
+/* G R M + DATA SUB — SAME LINE */
+.top-header > div:nth-child(2) > div:first-child,
 .top-header > div:nth-child(2) > div:nth-child(2) {
-    font-size: 26px !important;
+    display: inline-block !important;
+    width: auto !important;
+    font-size: 25px !important;
     line-height: 30px !important;
     margin: 0 !important;
+    padding: 0 !important;
+    white-space: nowrap !important;
 }
 
-/* USERNAME */
+/* USERNAME — UNDER BRAND */
 .top-header > div:nth-child(2) #userName {
+    flex-basis: 100% !important;
+    width: 100% !important;
     display: block !important;
     visibility: visible !important;
     opacity: 1 !important;
     font-size: 16px !important;
     line-height: 20px !important;
-    margin: 5px 0 0 0 !important;
+    margin: 4px 0 0 0 !important;
+    padding: 0 !important;
+    text-align: center !important;
+    white-space: nowrap !important;
 }
 
 /* WALLET + COMMISSION — POSITION INSIDE BLUE HEADER */
