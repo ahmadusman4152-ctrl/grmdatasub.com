@@ -263,7 +263,121 @@ body {
   font-weight: 800 !important;
   white-space: nowrap !important;
 }
+/* =========================================================
+   FINAL HEADER POSITION FIX
+   BRAND + USERNAME + WALLET + COMMISSION
+   ========================================================= */
 
+/* G R M DATA SUB + USERNAME CONTAINER */
+.top-header > div:nth-child(2) {
+    position: absolute !important;
+    top: 42px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: max-content !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+
+    white-space: nowrap !important;
+    text-align: center !important;
+
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    z-index: 20 !important;
+}
+
+/* GRM */
+.top-header > div:nth-child(2) > div:first-child {
+    font-size: 28px !important;
+    font-weight: 700 !important;
+    line-height: 34px !important;
+    color: #ffffff !important;
+    letter-spacing: 3px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* DATA SUB */
+.top-header > div:nth-child(2) > div:nth-child(2) {
+    font-size: 28px !important;
+    font-weight: 800 !important;
+    line-height: 34px !important;
+    color: #ffffff !important;
+    letter-spacing: 1px !important;
+    white-space: nowrap !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* USERNAME — SHOW AGAIN */
+#userName {
+    display: block !important;
+    flex-basis: 100% !important;
+    width: 100% !important;
+    order: 3 !important;
+
+    margin: 4px 0 0 !important;
+    padding: 0 !important;
+
+    text-align: center !important;
+    color: #ffffff !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    line-height: 20px !important;
+
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* WALLET + COMMISSION */
+.top-header > div:nth-child(3) {
+    position: relative !important;
+    z-index: 10 !important;
+    display: grid !important;
+    grid-template-columns: 1.55fr 0.9fr !important;
+    gap: 18px !important;
+    width: 100% !important;
+    margin-top: 70px !important;
+}
+
+/* WALLET CARD */
+.top-header > div:nth-child(3) > div:first-child {
+    min-height: 126px !important;
+    height: 126px !important;
+    padding: 17px 20px !important;
+    box-sizing: border-box !important;
+}
+
+/* COMMISSION CARD */
+.top-header > div:nth-child(3) > div:nth-child(2) {
+    min-height: 126px !important;
+    height: 126px !important;
+    padding: 15px !important;
+    box-sizing: border-box !important;
+}
+
+/* WALLET BALANCE */
+#walletBalance {
+    font-size: 38px !important;
+    line-height: 42px !important;
+    color: #ffffff !important;
+}
 /* =========================
    SERVICES SECTION
    ========================= */
