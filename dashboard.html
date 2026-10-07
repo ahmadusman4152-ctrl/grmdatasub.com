@@ -363,6 +363,39 @@ body {
 .services-section button.service-card > div:nth-child(3) {
     display: none !important;
 }
+    /* ==============================
+   FINAL DASHBOARD HEADER CLEANUP
+   ============================== */
+
+/* Remove the unwanted white overlay/curve crossing the balance area */
+.top-header::after {
+    display: none !important;
+    content: none !important;
+}
+
+/* Remove the outlined boxes around Settings, Bell and Profile */
+.top-header button,
+.top-header .icon-box,
+.top-header .header-icon,
+.top-header .profile-icon {
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+}
+
+/* Keep Add Money and Withdraw exactly the same size and centered */
+.services-section > div:last-child {
+    align-items: center !important;
+}
+
+.services-section a[href="fundwallet.html"],
+.services-section button.service-card:nth-child(2) {
+    min-height: 105px !important;
+    height: 105px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
 
 /* Add Money */
 .services-section a[href="fundwallet.html"] {
