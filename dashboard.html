@@ -396,6 +396,50 @@ body {
     align-items: center !important;
     justify-content: center !important;
 }
+    /* ==========================================
+   FINAL TOP HEADER ALIGNMENT & ICON COLORS
+   ========================================== */
+
+/* Put GRM DATA SUB together and center it */
+.top-header > div:first-child {
+    position: relative !important;
+}
+
+.top-header > div:first-child > :nth-child(3) {
+    position: absolute !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+}
+
+/* Settings - white and clean */
+.top-header > div:first-child > :nth-child(1) {
+    color: #ffffff !important;
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+}
+
+/* Notification bell - white and clean */
+.top-header > div:first-child > :nth-child(2) {
+    color: #ffffff !important;
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    filter: grayscale(1) brightness(0) invert(1) !important;
+}
+
+/* Profile - move slightly right and make it white */
+.top-header > div:first-child > :nth-child(4) {
+    position: absolute !important;
+    right: 8px !important;
+    color: #ffffff !important;
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    filter: grayscale(1) brightness(0) invert(1) !important;
+}
 
 /* Add Money */
 .services-section a[href="fundwallet.html"] {
