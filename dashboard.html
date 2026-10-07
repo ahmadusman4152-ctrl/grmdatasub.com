@@ -602,85 +602,118 @@ body {
     z-index: 10 !important;
 }
     /* ==========================================
-   FINAL VISUAL HEADER OVERRIDE
+   FINAL HEADER FIX - CORRECT STRUCTURE
    ========================================== */
 
-/* Remove header overlay/wave */
+/* REMOVE WHITE CURVED OVERLAY */
 .top-header::after {
     display: none !important;
     content: none !important;
-    background: transparent !important;
 }
 
-/* Remove translucent header boxes */
-.top-header > div:first-child > div:first-child,
-.top-header > div:first-child > div:first-child *,
-.top-header > div:first-child > div:last-child,
-.top-header > div:first-child > div:last-child * {
+/* ==========================================
+   TOP ICONS
+   ========================================== */
+
+.top-header > div:first-child {
+    position: relative !important;
+    z-index: 20 !important;
+}
+
+.top-header > div:first-child > div:first-child {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+}
+
+/* Settings */
+.top-header > div:first-child > div:first-child a[aria-label="Settings"] {
     background: transparent !important;
     border: none !important;
     box-shadow: none !important;
-}
-
-/* Keep header icons white */
-.top-header > div:first-child button,
-.top-header > div:first-child button *,
-.top-header > div:first-child a,
-.top-header > div:first-child a * {
     color: #ffffff !important;
+    filter: grayscale(1) brightness(0) invert(1) !important;
+}
+
+/* Bell */
+.top-header > div:first-child > div:first-child button {
     background: transparent !important;
     border: none !important;
     box-shadow: none !important;
+    color: #ffffff !important;
+    filter: grayscale(1) brightness(0) invert(1) !important;
 }
 
-/* Center the complete brand */
-.top-header > div:nth-child(2) {
+/* Profile */
+.top-header > div:first-child > a[aria-label="Profile"] {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    color: #ffffff !important;
+    filter: grayscale(1) brightness(0) invert(1) !important;
+}
+
+/* ==========================================
+   BRAND - G R M DATA SUB
+   ========================================== */
+
+.top-header > div:first-child > div:nth-child(2) {
     position: absolute !important;
     left: 50% !important;
+    top: 76px !important;
     transform: translateX(-50%) !important;
+
+    width: max-content !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+
     display: flex !important;
     flex-direction: row !important;
     align-items: center !important;
     justify-content: center !important;
-    width: max-content !important;
-    min-width: 0 !important;
-    gap: 10px !important;
+
+    gap: 8px !important;
     white-space: nowrap !important;
+    text-align: center !important;
+    z-index: 20 !important;
 }
 
-/* GRM */
-.top-header > div:nth-child(2) > div:first-child {
-    display: inline-block !important;
-    width: auto !important;
-    height: auto !important;
-    margin: 0 !important;
+/* G R M */
+.top-header > div:first-child > div:nth-child(2) > div:first-child {
     font-size: 28px !important;
-    letter-spacing: 3px !important;
     line-height: 34px !important;
+    letter-spacing: 3px !important;
+    font-weight: 400 !important;
+    margin: 0 !important;
+    height: auto !important;
     color: #ffffff !important;
+    opacity: 1 !important;
 }
 
 /* DATA SUB */
-.top-header > div:nth-child(2) > div:nth-child(2) {
-    display: inline-block !important;
-    width: auto !important;
-    margin: 0 !important;
+.top-header > div:first-child > div:nth-child(2) > div:nth-child(2) {
     font-size: 28px !important;
+    line-height: 34px !important;
     font-weight: 800 !important;
     letter-spacing: 1px !important;
-    line-height: 34px !important;
+    margin: 0 !important;
     color: #ffffff !important;
+    white-space: nowrap !important;
 }
 
-/* Remove old GRM pseudo-element */
-.top-header > div:nth-child(2) > div:first-child::before {
-    content: none !important;
+/* Hide username */
+.top-header > div:first-child > div:nth-child(2) #userName {
     display: none !important;
 }
 
-/* Do not alter wallet/commission */
-.top-header > div:nth-child(3) {
-    z-index: 10 !important;
+/* ==========================================
+   WALLET + COMMISSION
+   KEEP THEIR EXISTING DESIGN
+   ========================================== */
+
+.top-header > div:nth-child(2) {
+    position: relative !important;
+    z-index: 5 !important;
 }
 
 /* Add Money */
