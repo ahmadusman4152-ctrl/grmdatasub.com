@@ -670,91 +670,37 @@ body {
     border: none !important;
     box-shadow: none !important;
 }
+/* =========================================================
+   FINAL HEADER DESIGN
+   BLUE CURVE + BRAND + USERNAME + WALLET + COMMISSION
+   ========================================================= */
 
-/* ==========================================
-   G R M DATA SUB - ONE LINE + CENTER
-   ========================================== */
-
-.top-header > div:nth-child(2) {
-    position: absolute !important;
-    top: 76px !important;
-    left: 50% !important;
-    transform: translateX(-50%) !important;
-    width: auto !important;
-    min-width: 260px !important;
-    margin: 0 !important;
-    z-index: 20 !important;
-
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 8px !important;
-
-    white-space: nowrap !important;
-    text-align: center !important;
-}
-
-/* GRM */
-.top-header > div:nth-child(2) > div:first-child {
-    height: auto !important;
-    margin: 0 !important;
-    font-size: 28px !important;
-    line-height: 34px !important;
-    letter-spacing: 3px !important;
-    color: #ffffff !important;
-    white-space: nowrap !important;
-}
-
-/* REMOVE OLD GRM PSEUDO ICON */
-.top-header > div:nth-child(2) > div:first-child::before {
-    content: none !important;
-    display: none !important;
-}
-
-/* DATA SUB */
-.top-header > div:nth-child(2) > div:nth-child(2) {
-    margin: 0 !important;
-    font-size: 28px !important;
-    line-height: 34px !important;
-    font-weight: 800 !important;
-    letter-spacing: 1px !important;
-    color: #ffffff !important;
-    white-space: nowrap !important;
-}
-
-/* KEEP BALANCE + COMMISSION ABOVE THE WHITE AREA */
-.top-header > div:nth-child(3) {
-    position: relative !important;
-    z-index: 10 !important;
-}
-    /* ==========================================
-   FINAL HEADER FIX - CORRECT STRUCTURE
-   ========================================== */
-
-/* REMOVE WHITE CURVED OVERLAY */
+/* KEEP BLUE CURVED HEADER */
 .top-header::after {
-    display: none !important;
-    content: none !important;
+    display: block !important;
+    content: "" !important;
 }
 
-/* ==========================================
-   TOP ICONS
-   ========================================== */
-
+/* TOP ROW - SETTINGS / BELL / PROFILE */
 .top-header > div:first-child {
     position: relative !important;
-    z-index: 20 !important;
+    z-index: 30 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100% !important;
 }
 
+/* SETTINGS + BELL */
 .top-header > div:first-child > div:first-child {
     display: flex !important;
     align-items: center !important;
     gap: 10px !important;
 }
 
-/* Settings */
-.top-header > div:first-child > div:first-child a[aria-label="Settings"] {
+/* REMOVE BOXES FROM HEADER ICONS */
+.top-header > div:first-child a,
+.top-header > div:first-child button {
     background: transparent !important;
     border: none !important;
     box-shadow: none !important;
@@ -762,86 +708,146 @@ body {
     filter: grayscale(1) brightness(0) invert(1) !important;
 }
 
-/* Bell */
-.top-header > div:first-child > div:first-child button {
+/* PROFILE */
+.top-header > div:first-child > a:last-child {
+    margin-left: auto !important;
+    color: #ffffff !important;
     background: transparent !important;
     border: none !important;
     box-shadow: none !important;
-    color: #ffffff !important;
-    filter: grayscale(1) brightness(0) invert(1) !important;
 }
 
-/* Profile */
-.top-header > div:first-child > a[aria-label="Profile"] {
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    color: #ffffff !important;
-    filter: grayscale(1) brightness(0) invert(1) !important;
-}
-
-/* ==========================================
-   BRAND - G R M DATA SUB
-   ========================================== */
-
-.top-header > div:first-child > div:nth-child(2) {
-    position: absolute !important;
-    left: 50% !important;
-    top: 76px !important;
-    transform: translateX(-50%) !important;
-
-    width: max-content !important;
-    min-width: 0 !important;
-    margin: 0 !important;
-
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    justify-content: center !important;
-
-    gap: 8px !important;
-    white-space: nowrap !important;
-    text-align: center !important;
-    z-index: 20 !important;
-}
-
-/* G R M */
-.top-header > div:first-child > div:nth-child(2) > div:first-child {
-    font-size: 28px !important;
-    line-height: 34px !important;
-    letter-spacing: 3px !important;
-    font-weight: 400 !important;
-    margin: 0 !important;
-    height: auto !important;
-    color: #ffffff !important;
-    opacity: 1 !important;
-}
-
-/* DATA SUB */
-.top-header > div:first-child > div:nth-child(2) > div:nth-child(2) {
-    font-size: 28px !important;
-    line-height: 34px !important;
-    font-weight: 800 !important;
-    letter-spacing: 1px !important;
-    margin: 0 !important;
-    color: #ffffff !important;
-    white-space: nowrap !important;
-}
-
-/* Hide username */
-.top-header > div:first-child > div:nth-child(2) #userName {
-    display: none !important;
-}
-
-/* ==========================================
-   WALLET + COMMISSION
-   KEEP THEIR EXISTING DESIGN
-   ========================================== */
+/* =========================================================
+   BRAND + USERNAME
+   ========================================================= */
 
 .top-header > div:nth-child(2) {
     position: relative !important;
-    z-index: 5 !important;
+    z-index: 25 !important;
+
+    width: 100% !important;
+    margin: 8px 0 0 0 !important;
+    padding: 0 !important;
+
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+
+    text-align: center !important;
 }
+
+/* G R M DATA SUB */
+.top-header > div:nth-child(2) > div:first-child,
+.top-header > div:nth-child(2) > div:nth-child(2) {
+    color: #ffffff !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1.05 !important;
+    white-space: nowrap !important;
+}
+
+/* G R M */
+.top-header > div:nth-child(2) > div:first-child {
+    font-size: 28px !important;
+    font-weight: 500 !important;
+    letter-spacing: 3px !important;
+}
+
+/* DATA SUB */
+.top-header > div:nth-child(2) > div:nth-child(2) {
+    font-size: 28px !important;
+    font-weight: 800 !important;
+    letter-spacing: 1px !important;
+}
+
+/* USERNAME */
+.top-header > div:nth-child(2) #userName {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+
+    margin: 7px 0 0 0 !important;
+    padding: 0 !important;
+
+    color: #ffffff !important;
+    font-size: 18px !important;
+    font-weight: 600 !important;
+
+    line-height: 1.2 !important;
+    text-align: center !important;
+    white-space: nowrap !important;
+}
+
+/* =========================================================
+   WALLET + COMMISSION
+   ========================================================= */
+
+.top-header > div:nth-child(3) {
+    position: relative !important;
+    z-index: 20 !important;
+
+    width: 100% !important;
+    margin: 22px 0 0 0 !important;
+    padding: 0 !important;
+
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 14px !important;
+
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* KEEP WALLET AND COMMISSION CONTENT VISIBLE */
+.top-header > div:nth-child(3) > div {
+    position: relative !important;
+    z-index: 21 !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* WALLET BALANCE */
+#walletBalance {
+    position: relative !important;
+    z-index: 22 !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+    .top-header > div:nth-child(2) {
+        margin-top: 6px !important;
+    }
+
+    .top-header > div:nth-child(2) > div:first-child,
+    .top-header > div:nth-child(2) > div:nth-child(2) {
+        font-size: 26px !important;
+    }
+
+    .top-header > div:nth-child(2) #userName {
+        font-size: 17px !important;
+        margin-top: 6px !important;
+    }
+
+    .top-header > div:nth-child(3) {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 10px !important;
+        margin-top: 18px !important;
+    }
+}
+
 
 /* Add Money */
 .services-section a[href="fundwallet.html"] {
