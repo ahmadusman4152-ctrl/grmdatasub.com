@@ -477,6 +477,130 @@ body {
     background: transparent !important;
     filter: grayscale(1) brightness(0) invert(1) !important;
 }
+    /* ==========================================
+   FINAL HEADER FIX - DO NOT TOUCH BALANCE
+   ========================================== */
+
+/* REMOVE THE WHITE CURVED OVERLAY */
+.top-header::after {
+    display: none !important;
+    content: none !important;
+}
+
+/* TOP ROW */
+.top-header > div:first-child {
+    position: relative !important;
+    z-index: 20 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+}
+
+/* SETTINGS + BELL */
+.top-header > div:first-child > div:first-child {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+}
+
+/* REMOVE ALL BOXES FROM HEADER ICONS */
+.top-header > div:first-child button,
+.top-header > div:first-child a {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    width: 55px !important;
+    height: 55px !important;
+    padding: 0 !important;
+    color: #ffffff !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+/* MAKE SETTINGS AND BELL WHITE */
+.top-header > div:first-child button,
+.top-header > div:first-child button *,
+.top-header > div:first-child a *,
+.top-header > div:first-child a {
+    color: #ffffff !important;
+    filter: grayscale(1) brightness(0) invert(1) !important;
+}
+
+/* PROFILE - MOVE SLIGHTLY RIGHT */
+.top-header > div:first-child > div:last-child {
+    margin-left: auto !important;
+    margin-right: -4px !important;
+}
+
+/* PROFILE WHITE */
+.top-header > div:first-child > div:last-child button,
+.top-header > div:first-child > div:last-child a {
+    color: #ffffff !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* ==========================================
+   G R M DATA SUB - ONE LINE + CENTER
+   ========================================== */
+
+.top-header > div:nth-child(2) {
+    position: absolute !important;
+    top: 76px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: auto !important;
+    min-width: 260px !important;
+    margin: 0 !important;
+    z-index: 20 !important;
+
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+
+    white-space: nowrap !important;
+    text-align: center !important;
+}
+
+/* GRM */
+.top-header > div:nth-child(2) > div:first-child {
+    height: auto !important;
+    margin: 0 !important;
+    font-size: 28px !important;
+    line-height: 34px !important;
+    letter-spacing: 3px !important;
+    color: #ffffff !important;
+    white-space: nowrap !important;
+}
+
+/* REMOVE OLD GRM PSEUDO ICON */
+.top-header > div:nth-child(2) > div:first-child::before {
+    content: none !important;
+    display: none !important;
+}
+
+/* DATA SUB */
+.top-header > div:nth-child(2) > div:nth-child(2) {
+    margin: 0 !important;
+    font-size: 28px !important;
+    line-height: 34px !important;
+    font-weight: 800 !important;
+    letter-spacing: 1px !important;
+    color: #ffffff !important;
+    white-space: nowrap !important;
+}
+
+/* KEEP BALANCE + COMMISSION ABOVE THE WHITE AREA */
+.top-header > div:nth-child(3) {
+    position: relative !important;
+    z-index: 10 !important;
+}
 
 /* Add Money */
 .services-section a[href="fundwallet.html"] {
