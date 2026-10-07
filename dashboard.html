@@ -831,6 +831,58 @@ body {
   margin: 20px;
   font-weight: bold;
 }
+  /* ==============================
+   SMALL SERVICES FIX
+   Works with the new dashboard CSS
+   ============================== */
+
+.services-section {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    text-align: center !important;
+}
+
+.services-section .service-card,
+.services-section a.service-card,
+.services-section button.service-card {
+    box-sizing: border-box !important;
+    width: 100% !important;
+    min-height: 105px !important;
+    height: 105px !important;
+    margin: 0 !important;
+    padding: 12px !important;
+    border-radius: 18px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    text-align: left !important;
+    text-decoration: none !important;
+    overflow: hidden !important;
+}
+
+/* Prevent CSS from creating another service name */
+.services-section .service-card::before,
+.services-section .service-card::after,
+.services-section a.service-card::before,
+.services-section a.service-card::after,
+.services-section button.service-card::before,
+.services-section button.service-card::after {
+    content: none !important;
+    display: none !important;
+}
+
+/* Keep the icon and text inside each card */
+.services-section .service-card > div {
+    box-sizing: border-box !important;
+}
+
+/* Keep the service grid in two columns */
+.services-section > div:last-child {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 12px !important;
+    width: 100% !important;
+}
   </style>
 </head>
 
