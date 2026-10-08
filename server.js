@@ -796,6 +796,11 @@ app.post("/api/data", async (req, res) => {
       `,
       [tokenHash]
     );
+    console.log("[DATA DEBUG] user lookup result", {
+  found: userResult.rows.length,
+  userId: userResult.rows[0]?.id,
+  walletBalance: userResult.rows[0]?.wallet_balance
+});
 
     if (userResult.rows.length === 0) {
       return res.status(401).json({
