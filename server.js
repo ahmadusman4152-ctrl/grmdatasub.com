@@ -873,7 +873,14 @@ app.post("/api/data", async (req, res) => {
     );
 
     const variationsData = await variationsResponse.json();
-
+    console.log("[DATA DEBUG] VTpass variations response", {
+  httpStatus: variationsResponse.status,
+  code: variationsData?.code,
+  description: variationsData?.response_description,
+  variationCount: Array.isArray(variationsData?.content?.variations)
+    ? variationsData.content.variations.length
+    : 0
+});
     if (
       !variationsResponse.ok ||
       String(variationsData.code) !== "000"
