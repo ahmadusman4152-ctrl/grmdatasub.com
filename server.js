@@ -700,18 +700,16 @@ app.get("/api/data-plans", async (req, res) => {
       });
     }
 
-    const vtpassBaseUrl =
-      process.env.VTPASS_BASE_URL ||
-      "https://sandbox.vtpass.com/api/";
+    
+const apiKey = process.env.VTPASS_API_KEY;
+const publicKey = process.env.VTPASS_PUBLIC_KEY;
 
-    const apiKey = process.env.VTPASS_API_KEY;
-    const secretKey = process.env.VTPASS_SECRET_KEY;
+if (!apiKey || !publicKey) {
+  return res.status(500).json({
+    message: "VTpass API credentials are not configured."
+  });
+}
 
-    if (!apiKey || !secretKey) {
-      return res.status(500).json({
-        message: "VTpass API credentials are not configured."
-      });
-    }
 
     const response = await fetch(
       `${vtpassBaseUrl}service-variations?serviceID=${serviceID}`,
