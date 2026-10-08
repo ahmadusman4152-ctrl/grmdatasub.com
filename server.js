@@ -855,6 +855,10 @@ app.post("/api/data", async (req, res) => {
         message: "VTpass API credentials are not configured."
       });
     }
+    console.log("[DATA DEBUG] fetching VTpass variations", {
+  serviceID,
+  variationCode
+});
 
     // Get the official price of the selected variation
     const variationsResponse = await fetch(
