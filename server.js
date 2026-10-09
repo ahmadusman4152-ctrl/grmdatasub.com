@@ -684,7 +684,7 @@ async function requeryVtpassTransaction(requestId) {
 const vtpassBaseUrl =
   process.env.VTPASS_BASE_URL ||
   "https://sandbox.vtpass.com/api/";
-
+}
 // Data plans from VTpass Sandbox
 app.get("/api/data-plans", async (req, res) => {
   try {
