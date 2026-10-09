@@ -869,8 +869,10 @@ if (!apiKey || !publicKey || !secretKey) {
       {
         method: "GET",
         headers: {
-          "api-key": apiKey,
-          "secret-key": secretKey
+          
+        "api-key": apiKey,
+        "public-key": publicKey
+          
         }
       }
     );
