@@ -910,6 +910,14 @@ if (!apiKey || !publicKey || !secretKey) {
         String(plan.variation_code) ===
         String(variationCode)
     );
+    
+console.log("[DATA DEBUG] selected plan check", {
+  requestedVariationCode: String(variationCode),
+  availableVariationCodes: variations.map(plan => String(plan.variation_code)),
+  selectedPlanFound: Boolean(selectedPlan),
+  selectedPlanAmount: selectedPlan?.variation_amount
+});
+    
 
     if (!selectedPlan) {
       return res.status(400).json({
