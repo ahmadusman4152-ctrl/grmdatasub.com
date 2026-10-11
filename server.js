@@ -1,6 +1,12 @@
 const express = require("express");
 const crypto = require("crypto");
 const { Pool } = require("pg");
+const {
+  generateRegistrationOptions,
+  verifyRegistrationResponse,
+  generateAuthenticationOptions,
+  verifyAuthenticationResponse
+} = require("@simplewebauthn/server");
 
 const app = express();
 const PORT = process.env.PORT || 10000;
