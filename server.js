@@ -1671,6 +1671,17 @@ async function initializeDatabase() {
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     )
   `);
+    await pool.query(`
+    CREATE TABLE IF NOT EXISTS user_passkeys (
+      id UUID PRIMARY KEY,
+      user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      credential_id TEXT UNIQUE NOT NULL,
+      public_key TEXT NOT NULL,
+      counter BIGINT NOT NULL DEFAULT 0,
+      transports TEXT[],
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+  `);
 
   console.log("Database tables are ready.");
 }
