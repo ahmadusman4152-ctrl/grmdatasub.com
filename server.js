@@ -1634,6 +1634,202 @@ app.post("/api/logout", async (req, res) => {
     });
   }
 });
+// Passkey registration options
+app.post("/api/passkeys/register/options", async (req, res) => {
+  try {
+    const auth = req.headers.authorization || "";
+
+    if (!auth.startsWith("Bearer ")) {
+      return res.status(401).json({
+        message: "Authentication required."
+      });
+    }
+
+    const tokenHash = crypto
+      .createHash("sha256")
+      .update(auth.substring(7))
+      .digest("hex");
+
+    const result = await pool.query(
+      `SELECT u.id, u.email, u.full_name
+       FROM sessions s
+       JOIN users u ON u.id = s.user_id
+       WHERE s.token_hash = $1
+       AND s.expires_at > NOW()
+       LIMIT 1`,
+      [tokenHash]
+    );
+
+    if (!result.rows.length) {
+      return res.status(401).json({
+        message: "Session expired or invalid."
+      });
+    }
+
+    const user = result.rows[0];
+
+    const existing = await pool.query(
+      `SELECT credential_id, transports
+       FROM user_passkeys
+       WHERE user_id = $1`,
+      [user.id]
+    );
+
+    const options = await generateRegistrationOptions({
+      rpName: "G R M DATA SUB",
+      rpID: process.env.WEBAUTHN_RP_ID || "grmdatasub.com",
+      userID: Buffer.from(user.id),
+      userName: user.email,
+      userDisplayName: user.full_name,
+      attestationType: "none",
+      authenticatorSelection: {
+        residentKey: "preferred",
+        userVerification: "required"
+      },
+      excludeCredentials: existing.rows.map((item) => ({
+        id: item.credential_id,
+        transports: item.transports || []
+      }))
+    });
+
+    await pool.query(
+      `DELETE FROM user_passkey_challenges
+       WHERE user_id = $1 AND purpose = 'registration'`,
+      [user.id]
+    );
+
+    await pool.query(
+      `INSERT INTO user_passkey_challenges
+       (id, user_id, challenge, purpose, expires_at)
+       VALUES ($1, $2, $3, $4, NOW() + INTERVAL '5 minutes')`,
+      [
+        crypto.randomUUID(),
+        user.id,
+        options.challenge,
+        "registration"
+      ]
+    );
+
+    return res.json({ options });
+  } catch (error) {
+    console.error("Passkey registration options error:", error);
+    return res.status(500).json({
+      message: "Unable to start passkey registration."
+    });
+  }
+});
+
+
+// Verify and save registered passkey
+app.post("/api/passkeys/register/verify", async (req, res) => {
+  try {
+    const auth = req.headers.authorization || "";
+
+    if (!auth.startsWith("Bearer ")) {
+      return res.status(401).json({
+        message: "Authentication required."
+      });
+    }
+
+    const tokenHash = crypto
+      .createHash("sha256")
+      .update(auth.substring(7))
+      .digest("hex");
+
+    const userResult = await pool.query(
+      `SELECT u.id
+       FROM sessions s
+       JOIN users u ON u.id = s.user_id
+       WHERE s.token_hash = $1
+       AND s.expires_at > NOW()
+       LIMIT 1`,
+      [tokenHash]
+    );
+
+    if (!userResult.rows.length) {
+      return res.status(401).json({
+        message: "Session expired or invalid."
+      });
+    }
+
+    const user = userResult.rows[0];
+
+    const challengeResult = await pool.query(
+      `SELECT id, challenge
+       FROM user_passkey_challenges
+       WHERE user_id = $1
+       AND purpose = 'registration'
+       AND expires_at > NOW()
+       ORDER BY created_at DESC
+       LIMIT 1`,
+      [user.id]
+    );
+
+    if (!challengeResult.rows.length) {
+      return res.status(400).json({
+        message: "Registration expired. Please try again."
+      });
+    }
+
+    const challengeRecord = challengeResult.rows[0];
+
+    const verification = await verifyRegistrationResponse({
+      response: req.body,
+      expectedChallenge: challengeRecord.challenge,
+      expectedOrigin: [
+        "https://grmdatasub.com",
+        "https://www.grmdatasub.com"
+      ],
+      expectedRPID:
+        process.env.WEBAUTHN_RP_ID || "grmdatasub.com",
+      requireUserVerification: true
+    });
+
+    if (!verification.verified || !verification.registrationInfo) {
+      return res.status(400).json({
+        message: "Passkey verification failed."
+      });
+    }
+
+    const credential = verification.registrationInfo.credential;
+
+    await pool.query(
+      `INSERT INTO user_passkeys
+       (id, user_id, credential_id, public_key, counter, transports)
+       VALUES ($1, $2, $3, $4, $5, $6)`,
+      [
+        crypto.randomUUID(),
+        user.id,
+        credential.id,
+        Buffer.from(credential.publicKey).toString("base64url"),
+        credential.counter,
+        credential.transports || []
+      ]
+    );
+
+    await pool.query(
+      `DELETE FROM user_passkey_challenges WHERE id = $1`,
+      [challengeRecord.id]
+    );
+
+    return res.json({
+      verified: true,
+      message: "Passkey registered successfully."
+    });
+  } catch (error) {
+    console.error("Passkey registration verification error:", error);
+
+    if (error.code === "23505") {
+      return res.status(409).json({
+        message: "This passkey is already registered."
+      });
+    }
+
+    return res.status(500).json({
+      message: "Unable to verify passkey registration."
+    });
+  }
+});
 
 // Create database tables
 async function initializeDatabase() {
