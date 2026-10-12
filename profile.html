@@ -350,6 +350,25 @@
   <div id="saveMessage" class="message" role="status"></div>
 
 </form>
+      <div class="card" id="passkeyCard">
+  <h3>Fingerprint / Passkey Security</h3>
+  <p>Register your device passkey to help secure your transactions.</p>
+
+  <button
+    type="button"
+    id="registerPasskeyButton"
+    style="background:#073b2a;color:white;padding:12px 16px;border:0;border-radius:8px;width:100%;"
+  >
+    Register Fingerprint / Passkey
+  </button>
+
+  <div
+    id="passkeyMessage"
+    class="message"
+    role="status"
+    style="margin-top:12px;"
+  ></div>
+      </div>
     </section>
   </main>
 
@@ -559,6 +578,147 @@ profileForm.addEventListener("submit", async function (event) {
 });
 
     loadProfile();
+    const registerPasskeyButton = document.getElementById("registerPasskeyButton");
+const passkeyMessage = document.getElementById("passkeyMessage");
+
+function base64URLToBuffer(base64URL) {
+  const base64 = base64URL.replace(/-/g, "+").replace(/_/g, "/");
+  const padded = base64 + "=".repeat((4 - base64.length % 4) % 4);
+  const binary = atob(padded);
+  return Uint8Array.from(binary, c => c.charCodeAt(0));
+}
+
+function bufferToBase64URL(buffer) {
+  const bytes = new Uint8Array(buffer);
+  let binary = "";
+  bytes.forEach(byte => binary += String.fromCharCode(byte));
+  return btoa(binary)
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/g, "");
+}
+
+registerPasskeyButton.addEventListener("click", async () => {
+  const token = getToken();
+
+  if (!token) {
+    showMessage(
+      passkeyMessage,
+      "Please log in again before registering a passkey.",
+      "error"
+    );
+    return;
+  }
+
+  if (!window.PublicKeyCredential || !navigator.credentials) {
+    showMessage(
+      passkeyMessage,
+      "This browser does not support passkeys.",
+      "error"
+    );
+    return;
+  }
+
+  registerPasskeyButton.disabled = true;
+  registerPasskeyButton.textContent = "Registering...";
+
+  try {
+    const optionsResponse = await fetch(
+      API_BASE + "/api/passkeys/register/options",
+      {
+        method: "POST",
+        headers: {
+          Authorization: "Bearer " + token,
+          Accept: "application/json"
+        }
+      }
+    );
+
+    const optionsData = await optionsResponse.json();
+
+    if (!optionsResponse.ok || !optionsData.options) {
+      throw new Error(
+        optionsData.message || "Could not start passkey registration."
+      );
+    }
+
+    const options = optionsData.options;
+
+    options.challenge = base64URLToBuffer(options.challenge);
+    options.user.id = base64URLToBuffer(options.user.id);
+
+    if (options.excludeCredentials) {
+      options.excludeCredentials = options.excludeCredentials.map(item => ({
+        ...item,
+        id: base64URLToBuffer(item.id)
+      }));
+    }
+
+    const credential = await navigator.credentials.create({
+      publicKey: options
+    });
+
+    if (!credential) {
+      throw new Error("Passkey registration was cancelled.");
+    }
+
+    const body = {
+      id: credential.id,
+      rawId: bufferToBase64URL(credential.rawId),
+      type: credential.type,
+      response: {
+        clientDataJSON: bufferToBase64URL(
+          credential.response.clientDataJSON
+        ),
+        attestationObject: bufferToBase64URL(
+          credential.response.attestationObject
+        ),
+        transports: credential.response.getTransports
+          ? credential.response.getTransports()
+          : []
+      },
+      clientExtensionResults: credential.getClientExtensionResults()
+    };
+
+    const verifyResponse = await fetch(
+      API_BASE + "/api/passkeys/register/verify",
+      {
+        method: "POST",
+        headers: {
+          Authorization: "Bearer " + token,
+          "Content-Type": "application/json",
+          Accept: "application/json"
+        },
+        body: JSON.stringify(body)
+      }
+    );
+
+    const verifyData = await verifyResponse.json();
+
+    if (!verifyResponse.ok || !verifyData.verified) {
+      throw new Error(
+        verifyData.message || "Passkey verification failed."
+      );
+    }
+
+    showMessage(
+      passkeyMessage,
+      "Passkey registered successfully.",
+      "success"
+    );
+  } catch (error) {
+    console.error("Passkey registration error:", error);
+
+    showMessage(
+      passkeyMessage,
+      error.message || "Unable to register passkey.",
+      "error"
+    );
+  } finally {
+    registerPasskeyButton.disabled = false;
+    registerPasskeyButton.textContent = "Register Fingerprint / Passkey";
+  }
+});
   </script>
 </body>
 </html>
