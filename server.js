@@ -1830,78 +1830,34 @@ app.post("/api/passkeys/register/verify", async (req, res) => {
     });
   }
 });
-// Passkey login: generate authentication options
+// Passkey login without email or password
 app.post("/api/passkeys/auth/options", async (req, res) => {
   try {
-    const email = String(req.body.email || "").trim().toLowerCase();
-
-    if (!email) {
-      return res.status(400).json({
-        message: "Enter your email address first."
-      });
-    }
-
-    const result = await pool.query(
-      `SELECT id
-       FROM users
-       WHERE email = $1
-       LIMIT 1`,
-      [email]
-    );
-
-    if (!result.rows.length) {
-      return res.status(401).json({
-        message: "Account or passkey not found."
-      });
-    }
-
-    const user = result.rows[0];
-
-    const passkeys = await pool.query(
-      `SELECT credential_id, transports
-       FROM user_passkeys
-       WHERE user_id = $1`,
-      [user.id]
-    );
-
-    if (!passkeys.rows.length) {
-      return res.status(404).json({
-        message: "No passkey is registered for this account."
-      });
-    }
-
     const options = await generateAuthenticationOptions({
       rpID: process.env.WEBAUTHN_RP_ID || "grmdatasub.com",
-      allowCredentials: passkeys.rows.map((item) => ({
-        id: item.credential_id,
-        transports: item.transports || []
-      })),
       userVerification: "required"
     });
 
     await pool.query(
       `DELETE FROM user_passkey_challenges
-       WHERE user_id = $1 AND purpose = 'authentication'`,
-      [user.id]
+       WHERE purpose = 'authentication'
+       AND user_id IS NULL
+       AND expires_at < NOW()`
     );
 
     await pool.query(
       `INSERT INTO user_passkey_challenges
        (id, user_id, challenge, purpose, expires_at)
-       VALUES ($1, $2, $3, $4, NOW() + INTERVAL '5 minutes')`,
-      [
-        crypto.randomUUID(),
-        user.id,
-        options.challenge,
-        "authentication"
-      ]
+       VALUES ($1, NULL, $2, 'authentication',
+       NOW() + INTERVAL '5 minutes')`,
+      [crypto.randomUUID(), options.challenge]
     );
 
     return res.json({ options });
   } catch (error) {
-    console.error("Passkey login options error:", error);
+    console.error("Passkey options error:", error);
     return res.status(500).json({
-      message: "Unable to start passkey login."
+      message: "Unable to start fingerprint login."
     });
   }
 });
