@@ -309,14 +309,6 @@ function passkeyBytesToBase64Url(value) {
 
 if (passkeyLoginButton) {
   passkeyLoginButton.addEventListener("click", async () => {
-    const email = document.getElementById("email").value.trim();
-    const message = document.getElementById("message");
-
-    if (!email) {
-      message.textContent = "Enter your email address first.";
-      document.getElementById("email").focus();
-      return;
-    }
 
     if (!window.PublicKeyCredential || !navigator.credentials) {
       message.textContent =
