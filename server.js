@@ -1902,15 +1902,14 @@ app.post("/api/passkeys/auth/verify", async (req, res) => {
     const record = result.rows[0];
 
     const challengeResult = await pool.query(
-      `SELECT id, challenge
-       FROM user_passkey_challenges
-       WHERE user_id = $1
-         AND purpose = 'authentication'
-         AND expires_at > NOW()
-       ORDER BY created_at DESC
-       LIMIT 1`,
-      [record.user_id]
-    );
+  `SELECT id, challenge
+   FROM user_passkey_challenges
+   WHERE user_id IS NULL
+     AND purpose = 'authentication'
+     AND expires_at > NOW()
+   ORDER BY created_at DESC
+   LIMIT 1`
+);
 
     if (!challengeResult.rows.length) {
       return res.status(400).json({
