@@ -274,6 +274,135 @@
       window.location.href = "dashboard.html";
 
     });
+    
+const passkeyLoginButton =
+  document.getElementById("passkeyLoginButton");
+
+function passkeyBase64UrlToBytes(value) {
+  const base64 = value.replace(/-/g, "+").replace(/_/g, "/");
+  const padded = base64 + "=".repeat((4 - base64.length % 4) % 4);
+  return Uint8Array.from(atob(padded), c => c.charCodeAt(0));
+}
+
+function passkeyBytesToBase64Url(value) {
+  const bytes = new Uint8Array(value);
+  let binary = "";
+  bytes.forEach(byte => {
+    binary += String.fromCharCode(byte);
+  });
+
+  return btoa(binary)
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/g, "");
+}
+
+if (passkeyLoginButton) {
+  passkeyLoginButton.addEventListener("click", async () => {
+    const email = document.getElementById("email").value.trim();
+    const message = document.getElementById("message");
+
+    if (!email) {
+      message.textContent = "Enter your email address first.";
+      document.getElementById("email").focus();
+      return;
+    }
+
+    if (!window.PublicKeyCredential || !navigator.credentials) {
+      message.textContent =
+        "This browser does not support passkey login.";
+      return;
+    }
+
+    passkeyLoginButton.disabled = true;
+    message.textContent = "Preparing fingerprint login...";
+
+    try {
+      const optionsResponse = await fetch(
+        "https://api.grmdatasub.com/api/passkeys/auth/options",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email })
+        }
+      );
+
+      const optionsData = await optionsResponse.json();
+
+      if (!optionsResponse.ok) {
+        throw new Error(
+          optionsData.message || "Unable to start passkey login."
+        );
+      }
+
+      const publicKey = optionsData.options;
+      publicKey.challenge =
+        passkeyBase64UrlToBytes(publicKey.challenge);
+
+      publicKey.allowCredentials = (publicKey.allowCredentials || [])
+        .map(item => ({
+          ...item,
+          id: passkeyBase64UrlToBytes(item.id)
+        }));
+
+      const credential = await navigator.credentials.get({
+        publicKey
+      });
+
+      if (!credential) {
+        throw new Error("Fingerprint verification was cancelled.");
+      }
+
+      const assertion = {
+        id: credential.id,
+        rawId: passkeyBytesToBase64Url(credential.rawId),
+        type: credential.type,
+        response: {
+          clientDataJSON:
+            passkeyBytesToBase64Url(credential.response.clientDataJSON),
+          authenticatorData:
+            passkeyBytesToBase64Url(credential.response.authenticatorData),
+          signature:
+            passkeyBytesToBase64Url(credential.response.signature),
+          userHandle: credential.response.userHandle
+            ? passkeyBytesToBase64Url(credential.response.userHandle)
+            : null
+        },
+        clientExtensionResults: credential.getClientExtensionResults()
+      };
+
+      const verifyResponse = await fetch(
+        "https://api.grmdatasub.com/api/passkeys/auth/verify",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(assertion)
+        }
+      );
+
+      const data = await verifyResponse.json();
+
+      if (!verifyResponse.ok) {
+        throw new Error(
+          data.message || "Fingerprint verification failed."
+        );
+      }
+
+      localStorage.setItem("grm_auth_token", data.token);
+      localStorage.setItem("grm_user", JSON.stringify(data.user));
+
+      message.textContent = "Fingerprint login successful.";
+      welcomeOverlay.style.display = "flex";
+    } catch (error) {
+      console.error("Passkey login error:", error);
+      message.textContent =
+        error.message || "Unable to complete fingerprint login.";
+    } finally {
+      passkeyLoginButton.disabled = false;
+    }
+  });
+    }
+          
 
   </script>
 
