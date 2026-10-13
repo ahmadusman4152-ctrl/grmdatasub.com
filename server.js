@@ -2097,6 +2097,9 @@ async function initializeDatabase() {
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
   );
 `);
+  await pool.query(
+  "ALTER TABLE user_passkey_challenges ALTER COLUMN user_id DROP NOT NULL"
+);
 
   console.log("Database tables are ready.");
 }
